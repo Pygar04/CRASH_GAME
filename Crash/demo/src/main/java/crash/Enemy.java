@@ -144,7 +144,7 @@ public class Enemy implements Runnable {
     // Disegna l'enemy e le hitbox per il debug
     public void draw(Graphics g) {
         if (active) {
-            //g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
+            g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
 
             // Disegna la hitbox dell'enemy in giallo
             g.setColor(Color.YELLOW);

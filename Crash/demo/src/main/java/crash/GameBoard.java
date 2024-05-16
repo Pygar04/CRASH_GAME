@@ -100,15 +100,15 @@ public class GameBoard extends JPanel {
         g.drawString(bestScoreText, centerX - 60 - bestScoreWidth / 2, currentY);
         g.drawString("0", centerX + 40, currentY);
 
-        // Disegna le righe "RESTART" e "PLAY"
+        // Disegna le righe "RESTART" e "PAUSE"
         currentY += 50;
         String restartText = "RESTART";
         int restartWidth = metrics.stringWidth(restartText);
         g.drawString(restartText, centerX - 60 - restartWidth / 2, currentY);
 
-        String playText = "PLAY";
-        int playWidth = metrics.stringWidth(playText);
-        g.drawString(playText, centerX + 60 - playWidth / 2, currentY);
+        String pauseText = "PAUSE";
+        int pauseWidth = metrics.stringWidth(pauseText);
+        g.drawString(pauseText, centerX + 60 - pauseWidth / 2, currentY);
 
     }
 

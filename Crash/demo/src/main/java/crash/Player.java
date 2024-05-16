@@ -63,7 +63,7 @@ public class Player implements Runnable {
 
     // Disegna il player e le hitbox per il debug
     public void draw(Graphics g) {
-        //g.drawImage(playerImage, hitbox.x, hitbox.y, null);
+        g.drawImage(playerImage, hitbox.x, hitbox.y, null);
 
         // DEBUG: Disegna le hitbox
         g.setColor(Color.YELLOW);
