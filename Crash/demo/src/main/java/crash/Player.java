@@ -102,43 +102,37 @@ public class Player implements Runnable {
     // Controlla se il player è attivo; se non lo è, termina il metodo
     if (!active) return;
     
-    Rectangle newPosition = new Rectangle(hitbox); // Crea una nuova posizione di tipo Rectangle basata sulla hitbox attuale del player
     boolean canMoveHead = false;  // Inizializza una variabile per controllare se la testa può muoversi
     
     switch (direction) { // Calcola la nuova posizione della testa in base alla direzione
         case DIRECTION_RIGHT: // Se la direzione è destra
-            newPosition.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
+            hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
             // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
-            testa = new Rectangle((newPosition.x + newPosition.width), (newPosition.y + newPosition.height / 2), 
-                                  (newPosition.width / 2), 1);
+            testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), 
+                                  (hitbox.width / 2), 1);
             canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
             break;
 
         case DIRECTION_DOWN:
-            newPosition.y += speed;
-            testa = new Rectangle(newPosition.x + (newPosition.width / 2), newPosition.y + newPosition.height, 
-                                  1, newPosition.height);
+            hitbox.y += speed;
+            testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height, 
+                                  1, hitbox.height);
             canMoveHead = collisionManager.canMove(testa);
             break;
 
         case DIRECTION_LEFT:
-            newPosition.x -= speed;
-            testa = new Rectangle(newPosition.x - newPosition.width, newPosition.y + newPosition.height / 2, 
-                                  newPosition.width, 1);
+            hitbox.x -= speed;
+            testa = new Rectangle(hitbox.x - hitbox.width, hitbox.y + hitbox.height / 2, 
+                                  hitbox.width, 1);
             canMoveHead = collisionManager.canMove(testa);
             break;
 
         case DIRECTION_UP:
-            newPosition.y -= speed;
-            testa = new Rectangle(newPosition.x + (newPosition.width / 2), newPosition.y - newPosition.height, 
-                                  1, newPosition.height);
+            hitbox.y -= speed;
+            testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y - hitbox.height, 
+                                  1, hitbox.height);
             canMoveHead = collisionManager.canMove(testa);
             break;
-    }
-            // Aggiorna l'immagine del player per riflettere la possibile nuova direzione
-    // Verifica collisione con il muro per la hitbox principale
-    if (collisionManager.canMove(newPosition)) {
-        hitbox = newPosition; // Se la nuova posizione non collide, aggiorna la hitbox alla nuova posizione
     }
     
     // Cambia direzione solo se la testa incontra un muro

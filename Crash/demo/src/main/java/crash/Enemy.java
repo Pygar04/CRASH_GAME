@@ -65,33 +65,32 @@ public class Enemy implements Runnable {
     public void move() {
         if (!active) return;
 
-        Rectangle newPosition = new Rectangle(hitbox);
         boolean canMoveHead = true;
 
         // Calcola la nuova posizione della testa
         switch (direction) {
             case DIRECTION_RIGHT:
-                newPosition.x += speed;
-                testa = new Rectangle((newPosition.x + newPosition.width), (newPosition.y + newPosition.height / 2), (newPosition.width), 1);
+                hitbox.x += speed;
+                testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width), 1);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
             case DIRECTION_DOWN:
-                newPosition.y += speed;
-                testa = new Rectangle(newPosition.x + (newPosition.width / 2), newPosition.y + newPosition.height, 1, newPosition.height);
+                hitbox.y += speed;
+                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height, 1, hitbox.height);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
             case DIRECTION_LEFT:
-                newPosition.x -= speed;
-                testa = new Rectangle(newPosition.x - newPosition.width/2, newPosition.y + newPosition.height / 2, (newPosition.width/2), 1);
+                hitbox.x -= speed;
+                testa = new Rectangle(hitbox.x - hitbox.width/2, hitbox.y + hitbox.height / 2, (hitbox.width/2), 1);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
             case DIRECTION_UP:
-                newPosition.y -= speed;
-                testa = new Rectangle(newPosition.x + (newPosition.width / 2), newPosition.y - newPosition.height, 1, newPosition.height/2);
+                hitbox.y -= speed;
+                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y - hitbox.height, 1, hitbox.height/2);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
         }
-        
+
         // Se la testa non può muoversi, cambia direzione in senso orario
         if (!canMoveHead) {
             direction = (direction + 1) % 4;
@@ -101,23 +100,19 @@ public class Enemy implements Runnable {
             // Calcola la nuova posizione del corpo
             switch (direction) {
                 case DIRECTION_RIGHT:
-                    newPosition.x += speed;
+                    hitbox.x += speed;
                     break;
                 case DIRECTION_DOWN:
-                    newPosition.y += speed;
+                    hitbox.y += speed;
                     break;
                 case DIRECTION_LEFT:
-                    newPosition.x -= speed;
+                    hitbox.x -= speed;
                     break;
                 case DIRECTION_UP:
-                    newPosition.y -= speed;
+                    hitbox.y -= speed;
                     break;
             }
 
-            // Verifica se il corpo può muoversi
-            if (collisionManager.canMove(newPosition)) {
-                hitbox = newPosition;
-            }
         }
 
         updateEnemyImage(); // Aggiorna l'immagine del nemico per riflettere la possibile nuova direzione
