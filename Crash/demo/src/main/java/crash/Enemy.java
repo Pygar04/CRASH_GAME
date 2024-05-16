@@ -12,9 +12,11 @@ public class Enemy implements Runnable {
     private static final int DIRECTION_UP = 1;
     private static final int DIRECTION_RIGHT = 2;
     private static final int DIRECTION_DOWN = 3;
+    private static final int INIT_DIRECTION = DIRECTION_LEFT;
 
     // Variabili di istanza
     private int x, y, width, height, speed, direction;
+    private boolean hasMoved = false;
     private BufferedImage imageMap;
     private int mapWidth, mapHeight;
     private Rectangle hitbox; // hitbox dell'enemy
@@ -31,7 +33,7 @@ public class Enemy implements Runnable {
 
     public Enemy(CollisionManager collisionManager, Map map) {
         this.collisionManager = collisionManager;
-        this.direction = DIRECTION_LEFT; // iniziamo con il nemico che si muove verso destra
+        this.direction = INIT_DIRECTION; // iniziamo con il nemico che si muove verso destra
         this.imageMap = map.getMapImage();
         updateEnemyImage();
 
@@ -89,10 +91,7 @@ public class Enemy implements Runnable {
                 canMoveHead = collisionManager.canMove(testa);
                 break;
         }
-
-        // Verifica se la testa può muoversi
-        canMoveHead = collisionManager.canMove(testa);
-
+        
         // Se la testa non può muoversi, cambia direzione in senso orario
         if (!canMoveHead) {
             direction = (direction + 1) % 4;
@@ -172,5 +171,9 @@ public class Enemy implements Runnable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+    // metotod 
+    public boolean hasMoved() {
+        return hasMoved;
     }
 }
