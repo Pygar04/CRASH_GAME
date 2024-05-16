@@ -16,7 +16,6 @@ public class Enemy implements Runnable {
 
     // Variabili di istanza
     private int x, y, width, height, speed, direction;
-    private boolean hasMoved = false;
     private BufferedImage imageMap;
     private int mapWidth, mapHeight;
     private Rectangle hitbox; // hitbox dell'enemy
@@ -36,16 +35,14 @@ public class Enemy implements Runnable {
         this.direction = INIT_DIRECTION; // iniziamo con il nemico che si muove verso destra
         this.imageMap = map.getMapImage();
         updateEnemyImage();
-
         this.width = enemyImage.getWidth(null);
         this.height = enemyImage.getHeight(null);
         this.mapWidth = imageMap.getWidth();
         this.mapHeight = imageMap.getHeight();
         this.x = (mapWidth / 2) - 50 - width; // Centrato e spostato di 50 pixel a sinistra dal centro
         this.y = mapHeight - height - 50; // pixel sopra il bordo inferiore
-        this.speed = 5; // Velocità di movimento predefinita
+        this.speed = 3; // Velocità di movimento predefinita
         this.hitbox = new Rectangle(x, y, width, height);
-        this.testa = new Rectangle(x - width, y + height / 2, width, 1); // Inizializza la hitbox della testa
     }
 
     @Override
@@ -71,22 +68,26 @@ public class Enemy implements Runnable {
         switch (direction) {
             case DIRECTION_RIGHT:
                 hitbox.x += speed;
-                testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width), 1);
+                testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2),
+                                      (hitbox.width/2), 1);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
             case DIRECTION_DOWN:
                 hitbox.y += speed;
-                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height, 1, hitbox.height);
+                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height,
+                                     1, hitbox.height/2);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
             case DIRECTION_LEFT:
                 hitbox.x -= speed;
-                testa = new Rectangle(hitbox.x - hitbox.width/2, hitbox.y + hitbox.height / 2, (hitbox.width/2), 1);
+                testa = new Rectangle(hitbox.x - hitbox.width, hitbox.y + hitbox.height / 2, 
+                                        hitbox.width/2, 1);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
             case DIRECTION_UP:
                 hitbox.y -= speed;
-                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y - hitbox.height, 1, hitbox.height/2);
+                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y - hitbox.height,
+                                     1, hitbox.height/2);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
         }
@@ -145,7 +146,7 @@ public class Enemy implements Runnable {
     public void draw(Graphics g) {
         if (active) {
             g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
-
+            //Debug
             // Disegna la hitbox dell'enemy in giallo
             g.setColor(Color.YELLOW);
             g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
@@ -166,9 +167,5 @@ public class Enemy implements Runnable {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-    // metotod 
-    public boolean hasMoved() {
-        return hasMoved;
     }
 }

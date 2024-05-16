@@ -5,22 +5,19 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Punti {
     private List<Rectangle> punti;
     private int pointSize;
     private int mapWidth;
     private int mapHeight;
-    private Random random;
     private Rectangle centralBox;
 
     public Punti(int mapWidth, int mapHeight) {
         this.punti = new ArrayList<>();
-        this.pointSize = 5; // Dimensione ridotta del punto
+        this.pointSize = 3; // Dimensione ridotta del punto
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
-        this.random = new Random();
 
         // Definisci il riquadro centrale
         int boxWidth = 262;
@@ -33,30 +30,24 @@ public class Punti {
     }
 
     private void generatePunti() {
-        int corsiaSize = 51; // Larghezza di una corsia tra due muri
-        int numCorsieOrizzontali = mapWidth / corsiaSize;
-        int numCorsieVerticali = mapHeight / corsiaSize;
+        int corsiaSize = 50; // Larghezza di una corsia tra due muri
         
-        for (int i = 0; i < 100; i++) { // Genera 100 punti casuali sulla mappa
-            int x, y;
-            Rectangle punto;
-            do {
-                int corsiaX = random.nextInt(numCorsieOrizzontali);
-                int corsiaY = random.nextInt(numCorsieVerticali);
-
-                x = corsiaX * corsiaSize + (corsiaSize - pointSize) / 2;
-                y = corsiaY * corsiaSize + (corsiaSize - pointSize) / 2;
-                punto = new Rectangle(x, y, pointSize, pointSize);
-            } while (centralBox.intersects(punto) || isOnWall(x, y, corsiaSize));
-
-            punti.add(punto);
+        for (int y = 0; y < mapHeight; y += corsiaSize) {
+            for (int x = 0; x < mapWidth; x += corsiaSize) {
+                int puntoX = x + (corsiaSize - pointSize) / 2;
+                int puntoY = y + (corsiaSize - pointSize) / 2;
+                Rectangle punto = new Rectangle(puntoX, puntoY, pointSize, pointSize);
+                
+                if (!centralBox.intersects(punto) && !isOnWall(puntoX, puntoY, corsiaSize)) {
+                    punti.add(punto);
+                }
+            }
         }
     }
 
     private boolean isOnWall(int x, int y, int corsiaSize) {
         // Controlla se il punto si trova su un muro
-        // Puoi personalizzare questa logica in base alla tua implementazione dei muri nella mappa
-        return x % corsiaSize == 0 || y % corsiaSize == 0;
+        return x % corsiaSize < pointSize || y % corsiaSize < pointSize;
     }
 
     public void draw(Graphics g) {

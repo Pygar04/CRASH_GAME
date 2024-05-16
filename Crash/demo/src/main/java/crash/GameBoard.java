@@ -7,15 +7,22 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 
 public class GameBoard extends JPanel {
     private Player player;
+    private Image image;
     private Enemy enemy;
     private Punti punti;
     private Map gameMap;
     private CollisionManager collisionManager;
     private KeyboardManager keyboardManager;
     private ExecutorService executorService;
+
+    private static final String EXPLOSION = "/explosion.png";
 
     public GameBoard() { // Costruttore 
         setBackground(Color.BLACK);
@@ -113,7 +120,10 @@ public class GameBoard extends JPanel {
     }
 
     public void updateGame() {
-        collisionManager.handleCollisions(player, enemy);  // Gestisci le collisioni
+        if(collisionManager.handleCollisions(player, enemy));{
+            loadImage();
+        }
+              // Gestisci le collisioni
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
         repaint(); // Ridisegna il pannello di gioco con le nuove posizioni
     }
@@ -121,5 +131,14 @@ public class GameBoard extends JPanel {
     public void stopGame() {
         if (player.getLives() == 0)
             executorService.shutdownNow(); // Stop all running tasks
+    }
+
+    public void loadImage(){
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream(EXPLOSION));
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Errore nel caricamento dell'immagine", "Errore Immagine", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

@@ -16,7 +16,6 @@ public class Player implements Runnable {
 
     // Variabili di istanza
     private int x, y, width, height, speed, score;
-    private boolean hasMoved = false;
     private int direction;
     private BufferedImage mapImage;
     private int mapWidth, mapHeight;
@@ -46,7 +45,7 @@ public class Player implements Runnable {
         this.mapHeight = mapImage.getHeight();
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.speed = 5;
+        this.speed = 3;
         this.score = 0;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle(x + width, y + height / 2, width, 1); // Inizializza la hitbox della testa
@@ -116,21 +115,21 @@ public class Player implements Runnable {
         case DIRECTION_DOWN:
             hitbox.y += speed;
             testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height, 
-                                  1, hitbox.height);
+                                  1, hitbox.height/2);
             canMoveHead = collisionManager.canMove(testa);
             break;
 
         case DIRECTION_LEFT:
             hitbox.x -= speed;
-            testa = new Rectangle(hitbox.x - hitbox.width, hitbox.y + hitbox.height / 2, 
-                                  hitbox.width, 1);
+            testa = new Rectangle((hitbox.x - hitbox.width), (hitbox.y + hitbox.height / 2), 
+                                  (hitbox.width/2), 1);
             canMoveHead = collisionManager.canMove(testa);
             break;
 
         case DIRECTION_UP:
             hitbox.y -= speed;
             testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y - hitbox.height, 
-                                  1, hitbox.height);
+                                  1, hitbox.height/2);
             canMoveHead = collisionManager.canMove(testa);
             break;
     }
@@ -207,9 +206,4 @@ public class Player implements Runnable {
     public void incrementScore(){
         score++;
     }
-
-    public boolean hasMoved() {
-        return hasMoved;
-    }
-    
 }

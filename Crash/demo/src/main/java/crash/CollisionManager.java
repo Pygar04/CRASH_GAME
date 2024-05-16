@@ -54,9 +54,11 @@ public class CollisionManager {
         return true; // Se nessun pixel del muro è nell'area, l'area è libera
     }
 
-    public void handleCollisions(Player player, Enemy enemy) {
-        if (player.getBounds().intersects(enemy.getBounds())) { 
-            player.loseLife(); // Se il giocatore e il nemico si intersecano, il giocatore perde una vita
-        }
+    public boolean handleCollisions(Player player, Enemy enemy) {
+        if (player.getBounds().intersects(enemy.getBounds())){
+            player.loseLife();// Se il giocatore e il nemico si intersecano, il giocatore perde una vita
+            return true; 
+        }    
+        return false;
     }
 }
