@@ -31,7 +31,6 @@ public class Player implements Runnable {
     private static final String PLAYER_SX = "/playerSx.png";
     private static final String PLAYER_UP = "/playerUp.png";
     private static final String PLAYER_DOWN = "/playerDown.png";
-    private static final String PLAYER_DEAD = "/playerDead.png";
     
 
     public Player(CollisionManager collisionManager, Map map) {
