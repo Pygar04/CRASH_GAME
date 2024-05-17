@@ -20,8 +20,8 @@ public class CollisionManager {
     private void analyzeImageForWalls() {
         int width = mapImage.getWidth();
         int height = mapImage.getHeight();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int y = 0; y < height; y++) { // Itera sull'altezza
+            for (int x = 0; x < width; x++) { // Itera sulla larghezza
                 if (isWallColor(mapImage.getRGB(x, y))) {
                     wallPixels.add(new Point(x, y)); // Aggiunge il pixel al set dei pixel dei muri
                 }

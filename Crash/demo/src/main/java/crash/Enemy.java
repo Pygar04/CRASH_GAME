@@ -66,29 +66,36 @@ public class Enemy implements Runnable {
 
         // Calcola la nuova posizione della testa
         switch (direction) {
-            case DIRECTION_RIGHT:
-                hitbox.x += speed;
-                testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2),
-                                      (hitbox.width/2), 1);
-                canMoveHead = collisionManager.canMove(testa);
+            case DIRECTION_RIGHT: // Se la direzione è destra
+                hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
+                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+                testa = new Rectangle(hitbox.x + hitbox.width, hitbox.y + hitbox.height / 2, 
+                                      hitbox.width / 4, 1);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
                 break;
-            case DIRECTION_DOWN:
-                hitbox.y += speed;
-                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height,
-                                     1, hitbox.height/2);
-                canMoveHead = collisionManager.canMove(testa);
+        
+            case DIRECTION_DOWN: // Se la direzione è giù
+                hitbox.y += speed; // Sposta la nuova posizione verso il basso in base alla velocità
+                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+                testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y + hitbox.height, 
+                                      1, hitbox.height / 4);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
                 break;
-            case DIRECTION_LEFT:
-                hitbox.x -= speed;
-                testa = new Rectangle(hitbox.x - hitbox.width, hitbox.y + hitbox.height / 2, 
-                                        hitbox.width/2, 1);
-                canMoveHead = collisionManager.canMove(testa);
+        
+            case DIRECTION_LEFT: // Se la direzione è sinistra
+                hitbox.x -= speed; // Sposta la nuova posizione verso sinistra in base alla velocità
+                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+                testa = new Rectangle(hitbox.x - hitbox.width / 4, hitbox.y + hitbox.height / 2, 
+                                      hitbox.width / 4, 1);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
                 break;
-            case DIRECTION_UP:
-                hitbox.y -= speed;
-                testa = new Rectangle(hitbox.x + (hitbox.width / 2), hitbox.y - hitbox.height,
-                                     1, hitbox.height/2);
-                canMoveHead = collisionManager.canMove(testa);
+        
+            case DIRECTION_UP: // Se la direzione è su
+                hitbox.y -= speed; // Sposta la nuova posizione verso l'alto in base alla velocità
+                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+                testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y - hitbox.height / 4, 
+                                      1, hitbox.height / 4);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
                 break;
         }
 
@@ -97,26 +104,8 @@ public class Enemy implements Runnable {
             direction = (direction + 1) % 4;
             // Debug
             System.out.println("Nuova direzione Enemy: " + direction);
-        } else {
-            // Calcola la nuova posizione del corpo
-            switch (direction) {
-                case DIRECTION_RIGHT:
-                    hitbox.x += speed;
-                    break;
-                case DIRECTION_DOWN:
-                    hitbox.y += speed;
-                    break;
-                case DIRECTION_LEFT:
-                    hitbox.x -= speed;
-                    break;
-                case DIRECTION_UP:
-                    hitbox.y -= speed;
-                    break;
-            }
-
-        }
-
-        updateEnemyImage(); // Aggiorna l'immagine del nemico per riflettere la possibile nuova direzione
+            updateEnemyImage(); // Aggiorna l'immagine del nemico per riflettere la possibile nuova direzione
+        } 
     }
 
     // Aggiorna l'immagine del nemico in base alla direzione
@@ -125,15 +114,19 @@ public class Enemy implements Runnable {
             switch (direction) {
                 case DIRECTION_RIGHT:
                     enemyImage = ImageIO.read(getClass().getResourceAsStream(ENEMY_DX));
+                    hitbox = new Rectangle(x, y, width, height);
                     break;
                 case DIRECTION_DOWN:
                     enemyImage = ImageIO.read(getClass().getResourceAsStream(ENEMY_DOWN));
+                    hitbox = new Rectangle(x, y, height, width);
                     break;
                 case DIRECTION_LEFT:
                     enemyImage = ImageIO.read(getClass().getResourceAsStream(ENEMY_SX));
+                    hitbox = new Rectangle(x, y, width, height);
                     break;
                 case DIRECTION_UP:
                     enemyImage = ImageIO.read(getClass().getResourceAsStream(ENEMY_UP));
+                    hitbox = new Rectangle(x, y, height, width);
                     break;
             }
         } catch (IOException e) {
@@ -145,7 +138,7 @@ public class Enemy implements Runnable {
     // Disegna l'enemy e le hitbox per il debug
     public void draw(Graphics g) {
         if (active) {
-            g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
+            //g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
             //Debug
             // Disegna la hitbox dell'enemy in giallo
             g.setColor(Color.YELLOW);

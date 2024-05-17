@@ -51,7 +51,7 @@ public class Punti {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(Color.BLUE);
         for (Rectangle punto : punti) {
             g.fillRect(punto.x, punto.y, punto.width, punto.height);
         }
