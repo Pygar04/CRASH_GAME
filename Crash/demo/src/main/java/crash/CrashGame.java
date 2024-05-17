@@ -42,9 +42,8 @@ public class CrashGame implements Runnable {
     }
 
     public void stopGame() {
-        if (executor != null && !executor.isShutdown()) {
+        if (board.stopGame() && !executor.isShutdown()) {
             executor.shutdownNow(); // Stop all running tasks
-        }else
-        board.stopGame();
+        }
     }
 }

@@ -51,14 +51,7 @@ public class Player implements Runnable {
         this.testa = new Rectangle(x + width, y + height / 2, width, 1); // Inizializza la hitbox della testa
     }
 
-    public void restart(){
-        this.active = true;
-        this.direction = INIT_DIRECTION;
-        this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
-        this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.hitbox = new Rectangle(x, y, width, height);
-        this.testa = new Rectangle(x + width, y + height / 2, width / 2, 1); // Inizializza la hitbox della testa   
-    }
+   
 
     // Disegna il player e le hitbox per il debug
     public void draw(Graphics g) {
@@ -206,11 +199,27 @@ public class Player implements Runnable {
         return lives;
     }
 
+    public void setLives(){
+        this.lives = 3;
+    }
+
     public int getScore() {
         return score;
     }
 
     public void incrementScore(){
         score++;
+    }
+
+    public void setSpeed(){
+        this.speed = 3;
+    }
+
+    public void restart(){
+        this.active = true;
+        this.direction = INIT_DIRECTION;
+        this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
+        this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
+        this.hitbox = new Rectangle(x, y, width, height); // Inizializza la hitbox della testa   
     }
 }

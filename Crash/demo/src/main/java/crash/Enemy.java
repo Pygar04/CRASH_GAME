@@ -161,4 +161,16 @@ public class Enemy implements Runnable {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    public void setSpeed(){
+        this.speed = 3;
+    }
+
+    public void restart() {
+        this.active = true;
+        this.direction = INIT_DIRECTION;
+        this.x = (mapWidth / 2) - 50 - width;
+        this.y = mapHeight - height - 50;
+        this.hitbox = new Rectangle(x, y, width, height);
+    }
 }

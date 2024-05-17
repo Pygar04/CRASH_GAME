@@ -10,19 +10,27 @@ import java.util.concurrent.Executors;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.border.LineBorder;
+import java.awt.event.ActionEvent;
 
 public class GameBoard extends JPanel {
     private Player player;
-    private Image image;
+    private Image liveImage, explosionImage;
     private Enemy enemy;
     private Punti punti;
     private Map gameMap;
     private CollisionManager collisionManager;
     private KeyboardManager keyboardManager;
     private ExecutorService executorService;
+    private JButton restartButton;
+    private JButton pauseButton;
 
     private static final String EXPLOSION = "/explosion.png";
+    private static final String LIVE = "/live.png";
+    private static final int IMAGE_MARGIN = 10; // Distanza tra le immagini delle vite
 
     public GameBoard() { // Costruttore 
         setBackground(Color.BLACK);
@@ -36,10 +44,15 @@ public class GameBoard extends JPanel {
         addKeyListener(keyboardManager);
         setFocusable(true);
         requestFocusInWindow();
+        initButtons();
 
         executorService = Executors.newFixedThreadPool(2); // Crea un servizio executor con un pool di thread fisso di dimensione 2
         executorService.execute(player); // Avvia l'esecuzione del task del giocatore in un thread separato
         executorService.execute(enemy); // Avvia l'esecuzione del task del nemico in un thread separato
+
+        // Carica le immagini
+        loadExplosion();
+        loadLive();
     }
 
     @Override
@@ -83,9 +96,9 @@ public class GameBoard extends JPanel {
         }
         // Disegna il testo "TOP SCORE"
         currentY += 30;
-        String topScoreText = "TOP SCORE";
-        int topScoreWidth = metrics.stringWidth(topScoreText);
-        g.drawString(topScoreText, centerX - topScoreWidth / 2, currentY);
+        String ScoreText = "SCORE";
+        int ScoreWidth = metrics.stringWidth(ScoreText);
+        g.drawString(ScoreText, centerX - ScoreWidth / 2, currentY);
 
         // Disegna il punteggio
         currentY += 30;
@@ -98,47 +111,120 @@ public class GameBoard extends JPanel {
         String livesText = "LIVES";
         int livesWidth = metrics.stringWidth(livesText);
         g.drawString(livesText, centerX - 60 - livesWidth / 2, currentY);
-        String lives = String.valueOf(player.getLives());
-        g.drawString(lives, centerX + 40, currentY);
+        
+        // Disegna le immagini delle vite
+        for (int i = 0; i < player.getLives(); i++) {
+            g.drawImage(liveImage, centerX + 10 + (i * (liveImage.getWidth(null) + IMAGE_MARGIN)), currentY - liveImage.getHeight(null) + 15, null);
+        }
+        
 
-        currentY += 30;
-        String bestScoreText = "BEST SCORE";
+        currentY += 50;
+        String bestScoreText = "TOP SCORE";
         int bestScoreWidth = metrics.stringWidth(bestScoreText);
         g.drawString(bestScoreText, centerX - 60 - bestScoreWidth / 2, currentY);
         g.drawString("0", centerX + 40, currentY);
 
-        // Disegna le righe "RESTART" e "PAUSE"
-        currentY += 50;
-        String restartText = "RESTART";
-        int restartWidth = metrics.stringWidth(restartText);
-        g.drawString(restartText, centerX - 60 - restartWidth / 2, currentY);
+        // Posiziona i pulsanti
+        restartButton.setBounds(centerX - 110, currentY + 50, 100, 30);
+        pauseButton.setBounds(centerX + 10, currentY + 50, 100, 30);
+    }
 
-        String pauseText = "PAUSE";
-        int pauseWidth = metrics.stringWidth(pauseText);
-        g.drawString(pauseText, centerX + 60 - pauseWidth / 2, currentY);
+    private void initButtons() {
+        // Configura il font per i pulsanti
+        Font font = new Font("Monospaced", Font.BOLD, 16);
+        LineBorder yellowBorder = new LineBorder(Color.YELLOW, 2); // Crea un bordo giallo
 
+        // Crea e configura il pulsante RESTART
+        restartButton = new JButton("RESTART");
+        restartButton.setFont(font);
+        restartButton.setForeground(Color.YELLOW);
+        restartButton.setBackground(Color.BLACK);
+        restartButton.setFocusPainted(false);
+        restartButton.setBorder(yellowBorder); // Imposta il bordo giallo
+        add(restartButton);
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restartButton();
+            }
+            
+        });
+        
+
+        // Crea e configura il pulsante PAUSE
+        pauseButton = new JButton("PAUSE");
+        pauseButton.setFont(font);
+        pauseButton.setForeground(Color.YELLOW);
+        pauseButton.setBackground(Color.BLACK);
+        pauseButton.setFocusPainted(false);
+        pauseButton.setBorder(yellowBorder); // Imposta il bordo giallo
+        add(pauseButton);
+
+
+        // Posiziona i pulsanti
+        setLayout(null);
     }
 
     public void updateGame() {
-        if(collisionManager.handleCollisions(player, enemy));{
-            loadImage();
+        if(collisionManager.handleCollisions(player, enemy)) {
+            executorService.shutdownNow();
+            loadExplosion();
+            player.loseLife();
+            //restart();
         }
-              // Gestisci le collisioni
+        // Gestisci le collisioni
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
         repaint(); // Ridisegna il pannello di gioco con le nuove posizioni
     }
 
-    public void stopGame() {
-        if (player.getLives() == 0)
+    public boolean stopGame() {
+        if (player.getLives() <= 0){
             executorService.shutdownNow(); // Stop all running tasks
+            return true;
+            }
+        return false;
     }
 
-    public void loadImage(){
+    private void loadExplosion(){
         try {
-            image = ImageIO.read(getClass().getResourceAsStream(EXPLOSION));
+            explosionImage = ImageIO.read(getClass().getResourceAsStream(EXPLOSION));
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Errore nel caricamento dell'immagine", "Errore Immagine", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void loadLive(){
+        try {
+            liveImage = ImageIO.read(getClass().getResourceAsStream(LIVE));
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Errore nel caricamento dell'immagine", "Errore Immagine", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void restart(){
+        player.restart();
+        enemy.restart();
+        punti.restart();
+        repaint();
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(player);
+        executorService.execute(enemy);
+    }
+
+    public void restartButton(){
+        restartButton.addActionListener(e -> {
+            player.restart();
+            player.setLives();
+            player.setSpeed();
+            enemy.restart();
+            enemy.setSpeed();
+            punti.restart();
+            repaint();
+            executorService = Executors.newFixedThreadPool(2);
+            executorService.execute(player);
+            executorService.execute(enemy);
+        });
     }
 }

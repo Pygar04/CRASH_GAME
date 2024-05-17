@@ -55,10 +55,8 @@ public class CollisionManager {
     }
 
     public boolean handleCollisions(Player player, Enemy enemy) {
-        if (player.getBounds().intersects(enemy.getBounds())){
-            player.loseLife();// Se il giocatore e il nemico si intersecano, il giocatore perde una vita
-            return true; 
-        }    
+        if (player.getBounds().intersects(enemy.getBounds())) // Se il giocatore e il nemico si intersecano
+             return true; 
         return false;
     }
 }

@@ -67,4 +67,9 @@ public class Punti {
             return intersects;
         });
     }
+
+    public void restart(){
+        punti.clear();
+        generatePunti();
+    }
 }
