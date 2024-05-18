@@ -199,7 +199,7 @@ public class Player implements Runnable {
         return lives;
     }
 
-    public void setLives(){
+    public void initLives(){
         this.lives = 3;
     }
 
@@ -207,15 +207,33 @@ public class Player implements Runnable {
         return score;
     }
 
+    public void initScore(){
+        this.score = 0;
+    }
+
     public void incrementScore(){
         score++;
     }
 
-    public void setSpeed(){
+    public void initSpeed(){
         this.speed = 3;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean getActive(){
+        return active;
+    }
+
     public void restart(){
+        this.active = false; // Interrompe il thread corrente
+        try {
+            Thread.sleep(100); // Dà al thread il tempo di terminare
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         this.active = true;
         this.direction = INIT_DIRECTION;
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro

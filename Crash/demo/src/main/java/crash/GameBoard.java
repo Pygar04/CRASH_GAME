@@ -10,11 +10,9 @@ import java.util.concurrent.Executors;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.awt.Image;
-import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
-import java.awt.event.ActionEvent;
 
 public class GameBoard extends JPanel {
     private Player player;
@@ -27,6 +25,8 @@ public class GameBoard extends JPanel {
     private ExecutorService executorService;
     private JButton restartButton;
     private JButton pauseButton;
+    private int topScore;
+    private boolean isPaused = false;
 
     private static final String EXPLOSION = "/explosion.png";
     private static final String LIVE = "/live.png";
@@ -40,6 +40,7 @@ public class GameBoard extends JPanel {
         this.enemy = new Enemy(collisionManager, gameMap);
         this.punti = new Punti(gameMap.getWeightMap(), gameMap.getHeightMap());
         this.keyboardManager = new KeyboardManager(player);
+        this.topScore = 0;
 
         addKeyListener(keyboardManager);
         setFocusable(true);
@@ -52,7 +53,7 @@ public class GameBoard extends JPanel {
 
         // Carica le immagini
         loadExplosion();
-        loadLive();
+        loadLive();;
     }
 
     @Override
@@ -65,6 +66,20 @@ public class GameBoard extends JPanel {
 
         // Disegna il centro del background come nell'immagine fornita
         drawCenteredBackground(g);
+
+        if (isPaused) {
+            g.setColor(new Color(0, 0, 0, 127)); // Colore nero semitrasparente
+            int panelWidth = getWidth();
+            int panelHeight = getHeight();
+            int boxWidth = 262;
+            int boxHeight = 289;
+            int boxX = (panelWidth - boxWidth) / 2;
+            int boxY = (panelHeight - boxHeight) / 2;
+            g.fillRect(0, 0, panelWidth, boxY); // Parte superiore
+            g.fillRect(0, boxY, boxX, boxHeight); // Parte sinistra
+            g.fillRect(boxX + boxWidth, boxY, panelWidth - boxX - boxWidth, boxHeight); // Parte destra
+            g.fillRect(0, boxY + boxHeight, panelWidth, panelHeight - boxY - boxHeight); // Parte inferiore
+        }
     }
 
     private void drawCenteredBackground(Graphics g) {
@@ -88,11 +103,11 @@ public class GameBoard extends JPanel {
         int centerX = boxX + boxWidth / 2;
         int currentY = boxY + 40;
 
-        // Disegna il testo "GAME OVER"
+        // Disegna il testo "GAME OVER" solo se isGameOverVisible è true
         if(player.getLives() == 0){
-            String gameOverText = "GAME OVER";
-            int gameOverWidth = metrics.stringWidth(gameOverText);
-            g.drawString(gameOverText, centerX - gameOverWidth / 2, currentY);
+                String gameOverText = "GAME OVER";
+                int gameOverWidth = metrics.stringWidth(gameOverText);
+                g.drawString(gameOverText, centerX - gameOverWidth / 2, currentY);
         }
         // Disegna il testo "TOP SCORE"
         currentY += 30;
@@ -117,12 +132,16 @@ public class GameBoard extends JPanel {
             g.drawImage(liveImage, centerX + 10 + (i * (liveImage.getWidth(null) + IMAGE_MARGIN)), currentY - liveImage.getHeight(null) + 15, null);
         }
         
-
+        // Disegna il punteggio massimo
         currentY += 50;
         String bestScoreText = "TOP SCORE";
         int bestScoreWidth = metrics.stringWidth(bestScoreText);
         g.drawString(bestScoreText, centerX - 60 - bestScoreWidth / 2, currentY);
-        g.drawString("0", centerX + 40, currentY);
+        if(player.getScore() > topScore){
+            topScore = player.getScore();
+        }
+        String TopscoreText = String.valueOf(topScore);
+        g.drawString(TopscoreText, centerX + 40, currentY);
 
         // Posiziona i pulsanti
         restartButton.setBounds(centerX - 110, currentY + 50, 100, 30);
@@ -133,7 +152,7 @@ public class GameBoard extends JPanel {
         // Configura il font per i pulsanti
         Font font = new Font("Monospaced", Font.BOLD, 16);
         LineBorder yellowBorder = new LineBorder(Color.YELLOW, 2); // Crea un bordo giallo
-
+    
         // Crea e configura il pulsante RESTART
         restartButton = new JButton("RESTART");
         restartButton.setFont(font);
@@ -142,15 +161,20 @@ public class GameBoard extends JPanel {
         restartButton.setFocusPainted(false);
         restartButton.setBorder(yellowBorder); // Imposta il bordo giallo
         add(restartButton);
-        restartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                restartButton();
-            }
-            
+        restartButton.addActionListener(e -> {
+            player.restart();
+            player.initScore();
+            enemy.initSpeed();
+            player.initLives();
+            player.initSpeed();
+            enemy.restart();
+            punti.restart();
+            repaint();
+            executorService = Executors.newFixedThreadPool(2);
+            executorService.execute(player);
+            executorService.execute(enemy);
         });
-        
-
+    
         // Crea e configura il pulsante PAUSE
         pauseButton = new JButton("PAUSE");
         pauseButton.setFont(font);
@@ -159,8 +183,23 @@ public class GameBoard extends JPanel {
         pauseButton.setFocusPainted(false);
         pauseButton.setBorder(yellowBorder); // Imposta il bordo giallo
         add(pauseButton);
-
-
+        pauseButton.addActionListener(e -> {
+            if (player.getActive()) {
+                player.setActive(false);
+                enemy.setActive(false);
+                isPaused = true;
+                pauseButton.setText("RESUME");
+            } else {
+                player.setActive(true);
+                enemy.setActive(true);
+                isPaused = false;
+                executorService.execute(player);
+                executorService.execute(enemy);
+                pauseButton.setText("PAUSE");
+            }
+            repaint(); // Aggiunge questa chiamata per assicurarsi che il pannello venga ridisegnato quando il gioco viene messo in pausa o ripreso
+        });
+    
         // Posiziona i pulsanti
         setLayout(null);
     }
@@ -170,15 +209,26 @@ public class GameBoard extends JPanel {
             executorService.shutdownNow();
             loadExplosion();
             player.loseLife();
-            //restart();
+            if (player.getLives() == 0) {
+                stopGame();
+                repaint();
+                return;
+            }
+            try {
+                Thread.sleep(3000); // Mette in pausa il thread per 3 secondi
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            restart();
         }
         // Gestisci le collisioni
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
-        repaint(); // Ridisegna il pannello di gioco con le nuove posizioni
+        if(player.getLives() > 0) 
+            repaint();
     }
 
     public boolean stopGame() {
-        if (player.getLives() <= 0){
+        if (player.getLives() == 0){
             executorService.shutdownNow(); // Stop all running tasks
             return true;
             }
@@ -204,27 +254,14 @@ public class GameBoard extends JPanel {
     }
 
     public void restart(){
-        player.restart();
-        enemy.restart();
-        punti.restart();
-        repaint();
-        executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(player);
-        executorService.execute(enemy);
-    }
-
-    public void restartButton(){
-        restartButton.addActionListener(e -> {
+        if (player.getLives() > 0) {
             player.restart();
-            player.setLives();
-            player.setSpeed();
             enemy.restart();
-            enemy.setSpeed();
             punti.restart();
             repaint();
             executorService = Executors.newFixedThreadPool(2);
             executorService.execute(player);
             executorService.execute(enemy);
-        });
+        }
     }
 }

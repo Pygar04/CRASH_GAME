@@ -162,11 +162,22 @@ public class Enemy implements Runnable {
         this.active = active;
     }
 
-    public void setSpeed(){
+    public boolean getActive(){
+        return active;
+    }
+
+    public void initSpeed(){
         this.speed = 3;
     }
 
+
     public void restart() {
+        this.active = false; // Interrompe il thread corrente
+        try {
+            Thread.sleep(100); // Dà al thread il tempo di terminare
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         this.active = true;
         this.direction = INIT_DIRECTION;
         this.x = (mapWidth / 2) - 50 - width;
