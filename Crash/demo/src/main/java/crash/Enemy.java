@@ -41,7 +41,7 @@ public class Enemy implements Runnable {
         this.mapHeight = imageMap.getHeight();
         this.x = (mapWidth / 2) - 50 - width; // Centrato e spostato di 50 pixel a sinistra dal centro
         this.y = mapHeight - height - 50; // pixel sopra il bordo inferiore
-        this.speed = 3; // Velocità di movimento predefinita
+        this.speed = 1; // Velocità di movimento predefinita
         this.hitbox = new Rectangle(x, y, width, height);
     }
 
@@ -69,8 +69,8 @@ public class Enemy implements Runnable {
             case DIRECTION_RIGHT: // Se la direzione è destra
                 hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
                 // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
-                testa = new Rectangle(hitbox.x + hitbox.width, hitbox.y + hitbox.height / 2, 
-                                      hitbox.width / 4, 1);
+                testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), 
+                                      (hitbox.width / 4), 1);
                 canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
                 break;
         

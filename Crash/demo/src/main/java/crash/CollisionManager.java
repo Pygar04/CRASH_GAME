@@ -35,25 +35,29 @@ public class CollisionManager {
     }
 
     public boolean canMove(Rectangle intendedPosition) {
-        return isFree(intendedPosition); // Controlla se la posizione intesa è libera
+        boolean result = isFree(intendedPosition);
+        System.out.println("Testing canMove for: " + intendedPosition + " Result: " + result);
+        return result;
     }
-
+    
     private boolean isFree(Rectangle area) {
         int startX = Math.max(0, area.x);
         int endX = Math.min(mapImage.getWidth(), area.x + area.width);
         int startY = Math.max(0, area.y);
         int endY = Math.min(mapImage.getHeight(), area.y + area.height);
-
+    
         for (int x = startX; x < endX; x++) {
             for (int y = startY; y < endY; y++) {
-                if (wallPixels.contains(new Point(x, y))) { // 
+                if (wallPixels.contains(new Point(x, y))) {
+                    // Messaggio di debug per mostrare le coordinate del punto di collisione
+                    System.out.println("Collisione a: (" + x + ", " + y + ")");
                     return false; // Se un pixel del muro è nell'area, l'area non è libera
                 }
             }
         }
         return true; // Se nessun pixel del muro è nell'area, l'area è libera
     }
-
+    
     public boolean handleCollisions(Player player, Enemy enemy) {
         if (player.getBounds().intersects(enemy.getBounds())) // Se il giocatore e il nemico si intersecano
              return true; 
