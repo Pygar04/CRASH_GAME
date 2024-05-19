@@ -36,7 +36,6 @@ public class CollisionManager {
 
     public boolean canMove(Rectangle intendedPosition) {
         boolean result = isFree(intendedPosition);
-        System.out.println("Testing canMove for: " + intendedPosition + " Result: " + result);
         return result;
     }
     
@@ -49,8 +48,6 @@ public class CollisionManager {
         for (int x = startX; x < endX; x++) {
             for (int y = startY; y < endY; y++) {
                 if (wallPixels.contains(new Point(x, y))) {
-                    // Messaggio di debug per mostrare le coordinate del punto di collisione
-                    System.out.println("Collisione a: (" + x + ", " + y + ")");
                     return false; // Se un pixel del muro è nell'area, l'area non è libera
                 }
             }
@@ -62,5 +59,15 @@ public class CollisionManager {
         if (player.getBounds().intersects(enemy.getBounds())) // Se il giocatore e il nemico si intersecano
              return true; 
         return false;
+    }
+
+    public Point getCollisionPoint(Player player, Enemy enemy) {
+        if (player.getBounds().intersects(enemy.getBounds())) {
+            // Restituisce il punto medio della collisione
+            int collisionX = (player.getBounds().x + enemy.getBounds().x) / 2;
+            int collisionY = (player.getBounds().y + enemy.getBounds().y) / 2;
+            return new Point(collisionX, collisionY);
+        }
+        return null;
     }
 }

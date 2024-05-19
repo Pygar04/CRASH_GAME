@@ -13,6 +13,7 @@ import java.awt.Image;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
+import java.awt.Point;
 
 public class GameBoard extends JPanel {
     private Player player;
@@ -28,11 +29,14 @@ public class GameBoard extends JPanel {
     private int topScore;
     private boolean isPaused = false;
 
+    private int explosionX, explosionY;
+    private boolean showExplosion = false;
+
     private static final String EXPLOSION = "/explosion.png";
     private static final String LIVE = "/live.png";
     private static final int IMAGE_MARGIN = 10; // Distanza tra le immagini delle vite
 
-    public GameBoard() { // Costruttore 
+    public GameBoard() { // Costruttore
         setBackground(Color.BLACK);
         this.gameMap = new Map();
         this.collisionManager = new CollisionManager(gameMap);
@@ -41,19 +45,19 @@ public class GameBoard extends JPanel {
         this.punti = new Punti(gameMap.getWeightMap(), gameMap.getHeightMap());
         this.keyboardManager = new KeyboardManager(player);
         this.topScore = 0;
-
+    
         addKeyListener(keyboardManager);
         setFocusable(true);
         requestFocusInWindow();
         initButtons();
-
+    
         executorService = Executors.newFixedThreadPool(2); // Crea un servizio executor con un pool di thread fisso di dimensione 2
         executorService.execute(player); // Avvia l'esecuzione del task del giocatore in un thread separato
         executorService.execute(enemy); // Avvia l'esecuzione del task del nemico in un thread separato
-
+    
         // Carica le immagini
         loadExplosion();
-        loadLive();;
+        loadLive();
     }
 
     @Override
@@ -67,6 +71,23 @@ public class GameBoard extends JPanel {
         // Disegna il centro del background come nell'immagine fornita
         drawCenteredBackground(g);
 
+        // Disegna l'esplosione
+        drawExplosion(g);
+
+        // Disegna il menu di pausa
+        drawPauseMenu(g);
+    }
+
+
+
+    private void drawExplosion(Graphics g) {
+        if (showExplosion) {
+            System.out.println("Disegno l'esplosione alle coordinate: (" + explosionX + ", " + explosionY + ")");
+            g.drawImage(explosionImage, explosionX - explosionImage.getWidth(null) / 2, explosionY - explosionImage.getHeight(null) / 2, null);
+        }
+    }
+    
+    private void drawPauseMenu(Graphics g) {
         if (isPaused) {
             g.setColor(new Color(0, 0, 0, 127)); // Colore nero semitrasparente
             int panelWidth = getWidth();
@@ -81,6 +102,8 @@ public class GameBoard extends JPanel {
             g.fillRect(0, boxY + boxHeight, panelWidth, panelHeight - boxY - boxHeight); // Parte inferiore
         }
     }
+    
+    
 
     private void drawCenteredBackground(Graphics g) {
         g.setColor(Color.YELLOW);
@@ -204,10 +227,9 @@ public class GameBoard extends JPanel {
         setLayout(null);
     }
 
-    public void updateGame() {
+    private void handleCollision() {
         if(collisionManager.handleCollisions(player, enemy)) {
             executorService.shutdownNow();
-            loadExplosion();
             player.loseLife();
             if (player.getLives() == 0) {
                 stopGame();
@@ -221,11 +243,15 @@ public class GameBoard extends JPanel {
             }
             restart();
         }
-        // Gestisci le collisioni
+    }
+
+    public void updateGame() {
+        handleCollision();
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
-        if(player.getLives() > 0) 
+        if (player.getLives() > 0)
             repaint();
     }
+    
 
     public boolean stopGame() {
         if (player.getLives() == 0){
@@ -235,14 +261,20 @@ public class GameBoard extends JPanel {
         return false;
     }
 
-    private void loadExplosion(){
+    private void loadExplosion() {
         try {
             explosionImage = ImageIO.read(getClass().getResourceAsStream(EXPLOSION));
+            if (explosionImage != null) {
+                System.out.println("Immagine dell'esplosione caricata correttamente.");
+            } else {
+                System.out.println("Immagine dell'esplosione non trovata.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Errore nel caricamento dell'immagine", "Errore Immagine", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     private void loadLive(){
         try {

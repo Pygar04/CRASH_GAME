@@ -45,7 +45,7 @@ public class Player implements Runnable {
         this.mapHeight = mapImage.getHeight();
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.speed = 1;
+        this.speed = 3;
         this.score = 0;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle(x + width, y + height / 2, width, 1); // Inizializza la hitbox della testa
@@ -133,7 +133,6 @@ public class Player implements Runnable {
     // Cambia direzione solo se la testa incontra un muro
     if (!canMoveHead) {
         direction = (direction + 1) % 4; // Cambia direzione in senso orario (direzione + 1) e usa il modulo 4 per restare tra 0 e 3   
-        System.out.println("Changing direction Player to: " + direction); // Debug: stampa la nuova direzione del player
         updatePlayerImage(); // Aggiorna l'immagine del player per riflettere la possibile nuova direzione
     }
 }
