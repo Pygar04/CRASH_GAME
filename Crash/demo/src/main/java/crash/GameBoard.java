@@ -67,13 +67,10 @@ public class GameBoard extends JPanel {
         punti.draw(g);  // Disegna i punti sulla mappa
         player.draw(g);  // Disegna il giocatore
         enemy.draw(g);  // Disegna il nemico
-
-        // Disegna il centro del background come nell'immagine fornita
+        // Disegna il centro del background
         drawCenteredBackground(g);
-
         // Disegna l'esplosione
         drawExplosion(g);
-
         // Disegna il menu di pausa
         drawPauseMenu(g);
     }
@@ -204,7 +201,7 @@ public class GameBoard extends JPanel {
         pauseButton.setForeground(Color.YELLOW);
         pauseButton.setBackground(Color.BLACK);
         pauseButton.setFocusPainted(false);
-        pauseButton.setBorder(yellowBorder); // Imposta il bordo giallo
+        pauseButton.setBorder(yellowBorder);
         add(pauseButton);
         pauseButton.addActionListener(e -> {
             if (player.getActive()) {
@@ -227,26 +224,33 @@ public class GameBoard extends JPanel {
         setLayout(null);
     }
 
+    // 
     private void handleCollision() {
-        if(collisionManager.handleCollisions(player, enemy)) {
+        if (collisionManager.handleCollisions(player, enemy)) {
             executorService.shutdownNow();
             player.loseLife();
-            if (player.getLives() == 0) {
-                stopGame();
+            Point collisionPoint = collisionManager.getCollisionPoint(player, enemy);
+                explosionX = collisionPoint.x;
+                explosionY = collisionPoint.y;
+                showExplosion = true;
                 repaint();
-                return;
-            }
             try {
-                Thread.sleep(3000); // Mette in pausa il thread per 3 secondi
+                Thread.sleep(3000); // Pause the thread for 3 seconds
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+            showExplosion = false;
+            if (stopGame()) {
+                repaint();
+                executorService.shutdownNow();
+                return;
             }
             restart();
         }
     }
 
     public void updateGame() {
-        handleCollision();
+        handleCollision(); //commento 
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
         if (player.getLives() > 0)
             repaint();
@@ -255,7 +259,7 @@ public class GameBoard extends JPanel {
 
     public boolean stopGame() {
         if (player.getLives() == 0){
-            executorService.shutdownNow(); // Stop all running tasks
+            showExplosion = false;
             return true;
             }
         return false;
@@ -264,11 +268,6 @@ public class GameBoard extends JPanel {
     private void loadExplosion() {
         try {
             explosionImage = ImageIO.read(getClass().getResourceAsStream(EXPLOSION));
-            if (explosionImage != null) {
-                System.out.println("Immagine dell'esplosione caricata correttamente.");
-            } else {
-                System.out.println("Immagine dell'esplosione non trovata.");
-            }
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Errore nel caricamento dell'immagine", "Errore Immagine", JOptionPane.ERROR_MESSAGE);

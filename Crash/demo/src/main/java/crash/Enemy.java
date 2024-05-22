@@ -74,28 +74,25 @@ public class Enemy implements Runnable {
                 canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
                 break;
         
-            case DIRECTION_DOWN: // Se la direzione è giù
-                hitbox.y += speed; // Sposta la nuova posizione verso il basso in base alla velocità
-                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+            case DIRECTION_DOWN: 
+                hitbox.y += speed;
                 testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y + hitbox.height, 
                                       1, hitbox.height / 4);
-                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+                canMoveHead = collisionManager.canMove(testa);
                 break;
         
-            case DIRECTION_LEFT: // Se la direzione è sinistra
-                hitbox.x -= speed; // Sposta la nuova posizione verso sinistra in base alla velocità
-                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+            case DIRECTION_LEFT:
+                hitbox.x -= speed; 
                 testa = new Rectangle(hitbox.x - hitbox.width / 4, hitbox.y + hitbox.height / 2, 
                                       hitbox.width / 4, 1);
-                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+                canMoveHead = collisionManager.canMove(testa);
                 break;
         
-            case DIRECTION_UP: // Se la direzione è su
-                hitbox.y -= speed; // Sposta la nuova posizione verso l'alto in base alla velocità
-                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+            case DIRECTION_UP: 
+                hitbox.y -= speed;
                 testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y - hitbox.height / 4, 
                                       1, hitbox.height / 4);
-                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+                canMoveHead = collisionManager.canMove(testa);
                 break;
         }
 
@@ -136,9 +133,10 @@ public class Enemy implements Runnable {
     // Disegna l'enemy e le hitbox per il debug
     public void draw(Graphics g) {
         if (active) {
-            //g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
-            //Debug
-            // Disegna la hitbox dell'enemy in giallo
+            g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
+            
+            // DEBUG: Disegna la hitbox dell'enemy in giallo
+
             g.setColor(Color.YELLOW);
             g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 

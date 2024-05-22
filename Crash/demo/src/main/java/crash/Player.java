@@ -55,14 +55,16 @@ public class Player implements Runnable {
 
     // Disegna il player e le hitbox per il debug
     public void draw(Graphics g) {
-        //g.drawImage(playerImage, hitbox.x, hitbox.y, null);
+        if (active) {
+            g.drawImage(playerImage, hitbox.x, hitbox.y, null);
 
-        // DEBUG: Disegna le hitbox
-        g.setColor(Color.YELLOW);
-        g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+            // DEBUG: Disegna le hitbox
+            g.setColor(Color.YELLOW);
+            g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 
-        g.setColor(Color.RED);
-        g.drawRect(testa.x, testa.y, testa.width, testa.height);
+            g.setColor(Color.RED);
+            g.drawRect(testa.x, testa.y, testa.width, testa.height);
+        }
     }
 
     // Riduce le vite del player e ferma il gioco se le vite sono finite
@@ -105,28 +107,25 @@ public class Player implements Runnable {
             canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
             break;
     
-        case DIRECTION_DOWN: // Se la direzione è giù
-            hitbox.y += speed; // Sposta la nuova posizione verso il basso in base alla velocità
-            // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+        case DIRECTION_DOWN: 
+            hitbox.y += speed;
             testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y + hitbox.height, 
                                   1, hitbox.height / 4);
             canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
             break;
     
-        case DIRECTION_LEFT: // Se la direzione è sinistra
-            hitbox.x -= speed; // Sposta la nuova posizione verso sinistra in base alla velocità
-            // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+        case DIRECTION_LEFT:
+            hitbox.x -= speed;
             testa = new Rectangle(hitbox.x - hitbox.width / 4, hitbox.y + hitbox.height / 2, 
                                   hitbox.width / 4, 1);
             canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
             break;
     
-        case DIRECTION_UP: // Se la direzione è su
-            hitbox.y -= speed; // Sposta la nuova posizione verso l'alto in base alla velocità
-            // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+        case DIRECTION_UP:
+            hitbox.y -= speed;
             testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y - hitbox.height / 4, 
                                   1, hitbox.height / 4);
-            canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+            canMoveHead = collisionManager.canMove(testa);
             break;
     }
     
@@ -136,7 +135,6 @@ public class Player implements Runnable {
         updatePlayerImage(); // Aggiorna l'immagine del player per riflettere la possibile nuova direzione
     }
 }
-
 
     // Aggiorna l'immagine del player in base alla direzione
     private void updatePlayerImage() {
@@ -172,7 +170,7 @@ public class Player implements Runnable {
         restart();
     }
 
-    // Gestisce il movimento orizzontale del player senza cambiare direzione
+    // Gestisce il movimento orizzontale del player
     public void moveHorizontal(boolean moveLeft, boolean moveRight) {
         if (moveLeft && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
             x -= speed;
@@ -183,7 +181,7 @@ public class Player implements Runnable {
         }
     }
 
-    // Gestisce il movimento verticale del player senza cambiare direzione
+    // Gestisce il movimento verticale del player
     public void moveVertical(boolean moveUp, boolean moveDown) {
         if (moveUp && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
             y -= speed;
@@ -192,6 +190,20 @@ public class Player implements Runnable {
             y += speed;
             hitbox.y = y;
         }
+    }
+
+    public void restart(){
+        this.active = false; // Interrompe il thread corrente
+        try {
+            Thread.sleep(100); // Dà al thread il tempo di terminare
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        this.active = true;
+        this.direction = INIT_DIRECTION;
+        this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
+        this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
+        this.hitbox = new Rectangle(x, y, width, height); // Inizializza la hitbox della testa   
     }
 
     public int getLives() {
@@ -226,17 +238,5 @@ public class Player implements Runnable {
         return active;
     }
 
-    public void restart(){
-        this.active = false; // Interrompe il thread corrente
-        try {
-            Thread.sleep(100); // Dà al thread il tempo di terminare
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        this.active = true;
-        this.direction = INIT_DIRECTION;
-        this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
-        this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.hitbox = new Rectangle(x, y, width, height); // Inizializza la hitbox della testa   
-    }
+   
 }
