@@ -28,13 +28,21 @@ public class GameBoard extends JPanel {
     private JButton pauseButton;
     private int topScore;
     private boolean isPaused = false;
+    private SoundManager explosionSound;
+    private SoundManager gameOverSound;
+
+    private SoundManager countdownSound;
 
     private int explosionX, explosionY;
     private boolean showExplosion = false;
 
-    private static final String EXPLOSION = "/explosion.png";
-    private static final String LIVE = "/live.png";
+    private static final String EXPLOSION = "/Image/explosion.png";
+    private static final String LIVE = "/Image/live.png";
     private static final int IMAGE_MARGIN = 10; // Distanza tra le immagini delle vite
+
+    private static final String EXPLOSION_SOUND = "/Sound/explosion.wav";
+    private static final String GAME_OVER_SOUND = "/Sound/gameover.wav";
+    private static final String COUNTDOWN_SOUND = "/Sound/countdown.wav";
 
     public GameBoard() { // Costruttore
         setBackground(Color.BLACK);
@@ -226,14 +234,18 @@ public class GameBoard extends JPanel {
 
     // 
     private void handleCollision() {
+        explosionSound = new SoundManager(EXPLOSION_SOUND);
         if (collisionManager.handleCollisions(player, enemy)) {
             executorService.shutdownNow();
             player.loseLife();
-            Point collisionPoint = collisionManager.getCollisionPoint(player, enemy);
+            if(player.getLives() >= 0){
+                Point collisionPoint = collisionManager.getCollisionPoint(player, enemy);
                 explosionX = collisionPoint.x;
                 explosionY = collisionPoint.y;
                 showExplosion = true;
                 repaint();
+                explosionSound.play();
+            }
             try {
                 Thread.sleep(3000); // Pause the thread for 3 seconds
             } catch (InterruptedException e) {
@@ -258,12 +270,15 @@ public class GameBoard extends JPanel {
     
 
     public boolean stopGame() {
+        gameOverSound = new SoundManager(GAME_OVER_SOUND);
         if (player.getLives() == 0){
             showExplosion = false;
+            gameOverSound.play();
             return true;
             }
         return false;
     }
+
 
     private void loadExplosion() {
         try {

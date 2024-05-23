@@ -25,10 +25,10 @@ public class Enemy implements Runnable {
     private CollisionManager collisionManager;
 
     // Percorsi delle immagini dell'enemy
-    private static final String ENEMY_SX = "/enemySx.png";
-    private static final String ENEMY_DX = "/enemyDx.png";
-    private static final String ENEMY_UP = "/enemyUp.png";
-    private static final String ENEMY_DOWN = "/enemyDown.png";
+    private static final String ENEMY_SX = "/Image/enemySx.png";
+    private static final String ENEMY_DX = "/Image/enemyDx.png";
+    private static final String ENEMY_UP = "/Image/enemyUp.png";
+    private static final String ENEMY_DOWN = "/Image/enemyDown.png";
 
     public Enemy(CollisionManager collisionManager, Map map) {
         this.collisionManager = collisionManager;
@@ -68,6 +68,7 @@ public class Enemy implements Runnable {
         switch (direction) {
             case DIRECTION_RIGHT: // Se la direzione è destra
                 hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
+                x = hitbox.x;
                 // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
                 testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), 
                                       (hitbox.width / 4), 1);
@@ -76,13 +77,15 @@ public class Enemy implements Runnable {
         
             case DIRECTION_DOWN: 
                 hitbox.y += speed;
+                y = hitbox.y;
                 testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y + hitbox.height, 
                                       1, hitbox.height / 4);
                 canMoveHead = collisionManager.canMove(testa);
                 break;
         
             case DIRECTION_LEFT:
-                hitbox.x -= speed; 
+                hitbox.x -= speed;
+                x = hitbox.x;
                 testa = new Rectangle(hitbox.x - hitbox.width / 4, hitbox.y + hitbox.height / 2, 
                                       hitbox.width / 4, 1);
                 canMoveHead = collisionManager.canMove(testa);
@@ -90,6 +93,7 @@ public class Enemy implements Runnable {
         
             case DIRECTION_UP: 
                 hitbox.y -= speed;
+                y = hitbox.y;
                 testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y - hitbox.height / 4, 
                                       1, hitbox.height / 4);
                 canMoveHead = collisionManager.canMove(testa);

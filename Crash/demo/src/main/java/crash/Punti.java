@@ -18,6 +18,10 @@ public class Punti {
 
     private Rectangle centralBox; // Riquadro centrale della mappa
 
+    private SoundManager pointSound;
+
+    private static final String POINT_SOUND = "/Sound/point.wav";
+
     // Costruttore della classe Punti
     public Punti(int mapWidth, int mapHeight) {
         this.punti = new ArrayList<>();
@@ -70,12 +74,14 @@ public class Punti {
 
     // Metodo per verificare le collisioni tra il giocatore e i punti
     public void checkCollisions(Player player) {
+        pointSound = new SoundManager(POINT_SOUND);
         Rectangle playerBounds = player.getBounds();
         Iterator<Rectangle> iterator = punti.iterator();
         while (iterator.hasNext()) {
             Rectangle punto = iterator.next();
             // Se il giocatore interseca un punto, incrementa il punteggio del giocatore e rimuovi il punto
             if (punto.intersects(playerBounds)) {
+                pointSound.play();
                 player.incrementScore();
                 iterator.remove();
             }

@@ -5,7 +5,7 @@ public class LevelManager {
     private GameBoard gameBoard;
     private final int MAX_LEVEL = 3;
 
-    public LevelManager(GameBoard gameBoard) {
+    public LevelManager(GameBoard gameBoard, Punti point) {
         this.gameBoard = gameBoard;
         this.currentLevel = 1;
     }    

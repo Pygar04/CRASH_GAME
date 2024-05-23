@@ -27,10 +27,10 @@ public class Player implements Runnable {
     private CollisionManager collisionManager;
 
     // Percorsi delle immagini del player
-    private static final String PLAYER_DX = "/playerDx.png";
-    private static final String PLAYER_SX = "/playerSx.png";
-    private static final String PLAYER_UP = "/playerUp.png";
-    private static final String PLAYER_DOWN = "/playerDown.png";
+    private static final String PLAYER_DX = "/Image/playerDx.png";
+    private static final String PLAYER_SX = "/Image/playerSx.png";
+    private static final String PLAYER_UP = "/Image/playerUp.png";
+    private static final String PLAYER_DOWN = "/Image/playerDown.png";
     
 
     public Player(CollisionManager collisionManager, Map map) {
@@ -93,66 +93,74 @@ public class Player implements Runnable {
 
     // Gestisce il movimento del player
     public void move() {
-    // Controlla se il player è attivo; se non lo è, termina il metodo
-    if (!active) return;
-    
-    boolean canMoveHead = false;  // Inizializza una variabile per controllare se la testa può muoversi
-    
-    switch (direction) {
-        case DIRECTION_RIGHT: // Se la direzione è destra
-            hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
-            // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
-            testa = new Rectangle(hitbox.x + hitbox.width, hitbox.y + hitbox.height / 2, 
-                                  hitbox.width / 4, 1);
-            canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
-            break;
-    
-        case DIRECTION_DOWN: 
-            hitbox.y += speed;
-            testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y + hitbox.height, 
-                                  1, hitbox.height / 4);
-            canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
-            break;
-    
-        case DIRECTION_LEFT:
-            hitbox.x -= speed;
-            testa = new Rectangle(hitbox.x - hitbox.width / 4, hitbox.y + hitbox.height / 2, 
-                                  hitbox.width / 4, 1);
-            canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
-            break;
-    
-        case DIRECTION_UP:
-            hitbox.y -= speed;
-            testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y - hitbox.height / 4, 
-                                  1, hitbox.height / 4);
-            canMoveHead = collisionManager.canMove(testa);
-            break;
+        // Controlla se il player è attivo; se non lo è, termina il metodo
+        if (!active) return;
+
+        boolean canMoveHead = false;  // Inizializza una variabile per controllare se la testa può muoversi
+
+        switch (direction) {
+            case DIRECTION_RIGHT: // Se la direzione è destra
+                hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
+                 x= hitbox.x;
+                // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
+                testa = new Rectangle(hitbox.x + hitbox.width, hitbox.y + hitbox.height / 2, 
+                                      hitbox.width / 4, 1);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+                break;
+
+            case DIRECTION_DOWN: 
+                hitbox.y += speed;
+                 y= hitbox.y;
+                testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y + hitbox.height, 
+                                      1, hitbox.height / 4);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+                break;
+
+            case DIRECTION_LEFT:
+                hitbox.x -= speed;
+                 x= hitbox.x;
+                testa = new Rectangle(hitbox.x - hitbox.width / 4, hitbox.y + hitbox.height / 2, 
+                                      hitbox.width / 4, 1);
+                canMoveHead = collisionManager.canMove(testa); // Verifica se la testa può muoversi senza collisioni
+                break;
+
+            case DIRECTION_UP:
+                hitbox.y -= speed;
+                y= hitbox.y;
+                testa = new Rectangle(hitbox.x + hitbox.width / 2, hitbox.y - hitbox.height / 4, 
+                                      1, hitbox.height / 4);
+                canMoveHead = collisionManager.canMove(testa);
+                break;
+        }
+
+        // Cambia direzione solo se la testa incontra un muro
+        if (!canMoveHead) {
+            direction = (direction + 1) % 4; // Cambia direzione in senso orario (direzione + 1) e usa il modulo 4 per restare tra 0 e 3   
+            updatePlayerImage(); // Aggiorna l'immagine del player per riflettere la possibile nuova direzione
+        }
     }
-    
-    // Cambia direzione solo se la testa incontra un muro
-    if (!canMoveHead) {
-        direction = (direction + 1) % 4; // Cambia direzione in senso orario (direzione + 1) e usa il modulo 4 per restare tra 0 e 3   
-        updatePlayerImage(); // Aggiorna l'immagine del player per riflettere la possibile nuova direzione
-    }
-}
 
     // Aggiorna l'immagine del player in base alla direzione
     private void updatePlayerImage() {
         try {
             switch (direction) {
                 case DIRECTION_RIGHT:
+               
                     playerImage = ImageIO.read(getClass().getResourceAsStream(PLAYER_DX));
                     hitbox = new Rectangle(x, y, width, height);
                     break;
                 case DIRECTION_DOWN:
+             
                     playerImage = ImageIO.read(getClass().getResourceAsStream(PLAYER_DOWN));
                     hitbox = new Rectangle(x, y, height, width);
                     break;
                 case DIRECTION_LEFT:
+                
                     playerImage = ImageIO.read(getClass().getResourceAsStream(PLAYER_SX));
                     hitbox = new Rectangle(x, y, width, height);
                     break;
                 case DIRECTION_UP:
+                
                     playerImage = ImageIO.read(getClass().getResourceAsStream(PLAYER_UP));
                     hitbox = new Rectangle(x, y, height, width);
                     break;
