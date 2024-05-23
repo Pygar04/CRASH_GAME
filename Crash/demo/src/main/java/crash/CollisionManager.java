@@ -18,8 +18,8 @@ public class CollisionManager {
     }
 
     private void analyzeImageForWalls() {
-        int width = mapImage.getWidth();
-        int height = mapImage.getHeight();
+        int width = mapImage.getWidth(); // Larghezza dell'immagine
+        int height = mapImage.getHeight(); // Altezza dell'immagine
         for (int y = 0; y < height; y++) { // Itera sull'altezza
             for (int x = 0; x < width; x++) { // Itera sulla larghezza
                 if (isWallColor(mapImage.getRGB(x, y))) {
@@ -45,8 +45,8 @@ public class CollisionManager {
         int startY = Math.max(0, area.y);
         int endY = Math.min(mapImage.getHeight(), area.y + area.height);
     
-        for (int x = startX; x < endX; x++) {
-            for (int y = startY; y < endY; y++) {
+        for (int x = startX; x <= endX; x++) {
+            for (int y = startY; y <= endY; y++) {
                 if (wallPixels.contains(new Point(x, y))) {
                     return false; // Se un pixel del muro è nell'area, l'area non è libera
                 }

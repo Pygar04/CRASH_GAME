@@ -43,6 +43,7 @@ public class Enemy implements Runnable {
         this.y = mapHeight - height - 50; // pixel sopra il bordo inferiore
         this.speed = 3; // Velocità di movimento predefinita
         this.hitbox = new Rectangle(x, y, width, height);
+        this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
     }
 
     @Override
@@ -150,6 +151,22 @@ public class Enemy implements Runnable {
         }
     }
 
+    // Riavvia l'enemy
+    public void restart() {
+        this.active = false; // Interrompe il thread corrente
+        try {
+            Thread.sleep(100); // Dà al thread il tempo di terminare
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        this.active = true;
+        this.direction = INIT_DIRECTION;
+        this.x = (mapWidth / 2) - 50 - width;
+        this.y = mapHeight - height - 50;
+        this.hitbox = new Rectangle(x, y, width, height);
+        this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
+    }
+
     public Rectangle getBounds() {
         return new Rectangle(hitbox.x, hitbox.y, enemyImage.getWidth(null), enemyImage.getHeight(null));
     }
@@ -170,18 +187,4 @@ public class Enemy implements Runnable {
         this.speed = 3;
     }
 
-
-    public void restart() {
-        this.active = false; // Interrompe il thread corrente
-        try {
-            Thread.sleep(100); // Dà al thread il tempo di terminare
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        this.active = true;
-        this.direction = INIT_DIRECTION;
-        this.x = (mapWidth / 2) - 50 - width;
-        this.y = mapHeight - height - 50;
-        this.hitbox = new Rectangle(x, y, width, height);
-    }
 }

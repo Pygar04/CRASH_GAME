@@ -30,7 +30,6 @@ public class GameBoard extends JPanel {
     private boolean isPaused = false;
     private SoundManager explosionSound;
     private SoundManager gameOverSound;
-
     private SoundManager countdownSound;
 
     private int explosionX, explosionY;

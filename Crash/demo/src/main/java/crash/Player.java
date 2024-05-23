@@ -15,7 +15,7 @@ public class Player implements Runnable {
     private static final int INIT_DIRECTION = DIRECTION_RIGHT;
 
     // Variabili di istanza
-    private int x, y, width, height, speed, score;
+    private int x, y, width, height, speed, score, moveSpeed;
     private int direction;
     private BufferedImage mapImage;
     private int mapWidth, mapHeight;
@@ -46,6 +46,7 @@ public class Player implements Runnable {
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
         this.speed = 3;
+        this.moveSpeed = 5;
         this.score = 0;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle(x + width, y + height / 2, width, 1); // Inizializza la hitbox della testa
@@ -101,7 +102,7 @@ public class Player implements Runnable {
         switch (direction) {
             case DIRECTION_RIGHT: // Se la direzione è destra
                 hitbox.x += speed;  // Sposta la nuova posizione verso destra in base alla velocità
-                 x= hitbox.x;
+                 x= hitbox.x; // 
                 // Calcola la nuova posizione della testa come un piccolo rettangolo davanti alla direzione di movimento
                 testa = new Rectangle(hitbox.x + hitbox.width, hitbox.y + hitbox.height / 2, 
                                       hitbox.width / 4, 1);
@@ -178,25 +179,39 @@ public class Player implements Runnable {
         restart();
     }
 
-    // Gestisce il movimento orizzontale del player
     public void moveHorizontal(boolean moveLeft, boolean moveRight) {
         if (moveLeft && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
-            x -= speed;
-            hitbox.x = x;
+            x -= moveSpeed;
+            if (collisionManager.canMove(hitbox)) {
+                hitbox.x = x;
+            } else {
+                x += moveSpeed; // Ripristina la posizione x se la mossa non è valida
+            }
         } else if (moveRight && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
-            x += speed;
-            hitbox.x = x;
+            x += moveSpeed;
+            if (collisionManager.canMove(hitbox)) {
+                hitbox.x = x;
+            } else {
+                x -= moveSpeed; // Ripristina la posizione x se la mossa non è valida
+            }
         }
     }
-
-    // Gestisce il movimento verticale del player
+    
     public void moveVertical(boolean moveUp, boolean moveDown) {
         if (moveUp && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
-            y -= speed;
-            hitbox.y = y;
+            y -= moveSpeed;
+            if (collisionManager.canMove(hitbox)) {
+                hitbox.y = y;
+            } else {
+                y += moveSpeed; // Ripristina la posizione y se la mossa non è valida
+            }
         } else if (moveDown && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
-            y += speed;
-            hitbox.y = y;
+            y += moveSpeed;
+            if (collisionManager.canMove(hitbox)) {
+                hitbox.y = y;
+            } else {
+                y -= moveSpeed; // Ripristina la posizione y se la mossa non è valida
+            }
         }
     }
 
@@ -211,7 +226,8 @@ public class Player implements Runnable {
         this.direction = INIT_DIRECTION;
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.hitbox = new Rectangle(x, y, width, height); // Inizializza la hitbox della testa   
+        this.hitbox = new Rectangle(x, y, width, height); // Inizializza la hitbox
+        this.testa = new Rectangle(x + width, y + height / 2, width, 1); //  Inizializza la hitbox della testa  
     }
 
     public int getLives() {
