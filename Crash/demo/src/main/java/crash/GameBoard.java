@@ -82,8 +82,6 @@ public class GameBoard extends JPanel {
         drawPauseMenu(g);
     }
 
-
-
     private void drawExplosion(Graphics g) {
         if (showExplosion) {
             System.out.println("Disegno l'esplosione alle coordinate: (" + explosionX + ", " + explosionY + ")");
@@ -107,8 +105,6 @@ public class GameBoard extends JPanel {
         }
     }
     
-    
-
     private void drawCenteredBackground(Graphics g) {
         g.setColor(Color.YELLOW);
         Font font = new Font("Monospaced", Font.BOLD, 16); // Font size regolato
@@ -200,6 +196,7 @@ public class GameBoard extends JPanel {
             executorService = Executors.newFixedThreadPool(2);
             executorService.execute(player);
             executorService.execute(enemy);
+            requestFocusInWindow(); // Aggiungi questa riga per ripristinare il focus
         });
     
         // Crea e configura il pulsante PAUSE
@@ -231,7 +228,6 @@ public class GameBoard extends JPanel {
         setLayout(null);
     }
 
-    // 
     private void handleCollision() {
         explosionSound = new SoundManager(EXPLOSION_SOUND);
         if (collisionManager.handleCollisions(player, enemy)) {
@@ -261,7 +257,7 @@ public class GameBoard extends JPanel {
     }
 
     public void updateGame() {
-        handleCollision(); //commento 
+        handleCollision();
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
         if (player.getLives() > 0)
             repaint();
@@ -278,7 +274,6 @@ public class GameBoard extends JPanel {
         return false;
     }
 
-
     private void loadExplosion() {
         try {
             explosionImage = ImageIO.read(getClass().getResourceAsStream(EXPLOSION));
@@ -287,7 +282,6 @@ public class GameBoard extends JPanel {
             JOptionPane.showMessageDialog(null, "Errore nel caricamento dell'immagine", "Errore Immagine", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
     private void loadLive(){
         try {
@@ -307,6 +301,7 @@ public class GameBoard extends JPanel {
             executorService = Executors.newFixedThreadPool(2);
             executorService.execute(player);
             executorService.execute(enemy);
+            requestFocusInWindow(); // Aggiungi questa riga per ripristinare il focus
         }
     }
 }
