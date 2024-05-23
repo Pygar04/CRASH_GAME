@@ -31,6 +31,7 @@ public class GameBoard extends JPanel {
     private SoundManager explosionSound;
     private SoundManager gameOverSound;
     private SoundManager countdownSound;
+    private float volume;
 
     private int explosionX, explosionY;
     private boolean showExplosion = false;
@@ -52,6 +53,7 @@ public class GameBoard extends JPanel {
         this.punti = new Punti(gameMap.getWeightMap(), gameMap.getHeightMap());
         this.keyboardManager = new KeyboardManager(player);
         this.topScore = 0;
+        this.volume = 0.5f;
     
         addKeyListener(keyboardManager);
         setFocusable(true);

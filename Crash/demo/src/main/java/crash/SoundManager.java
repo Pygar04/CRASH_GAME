@@ -1,20 +1,21 @@
 package crash;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.IOException;
 
 public class SoundManager {
     private Clip clip;
+    private float volume;
+    private FloatControl volumeControl;
 
     public SoundManager(String path) {
+        this.volume = -20;
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(path));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
+            volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(volume); // imposta il volume
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
             System.err.println("Errore nel caricamento del suono: " + e.getMessage());
