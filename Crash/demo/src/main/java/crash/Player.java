@@ -46,7 +46,7 @@ public class Player implements Runnable {
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
         this.speed = 3;
-        this.moveSpeed = 8;
+        this.moveSpeed = 50;
         this.score = 0;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle(x + width, y + height / 2, width, 1); // Inizializza la hitbox della testa
