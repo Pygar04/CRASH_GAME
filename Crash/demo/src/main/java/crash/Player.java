@@ -181,39 +181,57 @@ public class Player implements Runnable {
 
     public void moveHorizontal(boolean moveLeft, boolean moveRight) {
         if (moveLeft && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
-            x -= moveSpeed;
-            if (collisionManager.canMove(hitbox)) {
-                hitbox.x = x;
-            } else {
-                x += moveSpeed; // Ripristina la posizione x se la mossa non è valida
+            for (int i = 0; i < moveSpeed; i++) {
+                int newX = x - 1;
+                Rectangle newHitbox = new Rectangle(newX, y, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    x = newX;
+                    hitbox.x = x;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
             }
         } else if (moveRight && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
-            x += moveSpeed;
-            if (collisionManager.canMove(hitbox)) {
-                hitbox.x = x;
-            } else {
-                x -= moveSpeed; // Ripristina la posizione x se la mossa non è valida
+            for (int i = 0; i < moveSpeed; i++) {
+                int newX = x + 1;
+                Rectangle newHitbox = new Rectangle(newX, y, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    x = newX;
+                    hitbox.x = x;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
             }
         }
     }
     
     public void moveVertical(boolean moveUp, boolean moveDown) {
         if (moveUp && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
-            y -= moveSpeed;
-            if (collisionManager.canMove(hitbox)) {
-                hitbox.y = y;
-            } else {
-                y += moveSpeed; // Ripristina la posizione y se la mossa non è valida
+            for (int i = 0; i < moveSpeed; i++) {
+                int newY = y - 1;
+                Rectangle newHitbox = new Rectangle(x, newY, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    y = newY;
+                    hitbox.y = y;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
             }
         } else if (moveDown && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
-            y += moveSpeed;
-            if (collisionManager.canMove(hitbox)) {
-                hitbox.y = y;
-            } else {
-                y -= moveSpeed; // Ripristina la posizione y se la mossa non è valida
+            for (int i = 0; i < moveSpeed; i++) {
+                int newY = y + 1;
+                Rectangle newHitbox = new Rectangle(x, newY, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    y = newY;
+                    hitbox.y = y;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
             }
         }
     }
+    
+    
 
     public void restart(){
         this.active = false; // Interrompe il thread corrente

@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Random;
 
 public class Enemy implements Runnable {
     // Costanti per le direzioni di movimento
@@ -23,6 +24,9 @@ public class Enemy implements Runnable {
     private Image enemyImage;
     private boolean active = true; // Stato attivo
     private CollisionManager collisionManager;
+    private Random random = new Random();
+    private int moveSpeed;
+    
 
     // Percorsi delle immagini dell'enemy
     private static final String ENEMY_SX = "/Image/enemySx.png";
@@ -42,6 +46,7 @@ public class Enemy implements Runnable {
         this.x = (mapWidth / 2) - 50 - width; // Centrato e spostato di 50 pixel a sinistra dal centro
         this.y = mapHeight - height - 50; // pixel sopra il bordo inferiore
         this.speed = 3; // Velocità di movimento predefinita
+        this.moveSpeed = 50;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
     }
@@ -50,6 +55,7 @@ public class Enemy implements Runnable {
     public void run() {
         while (active) {
             move();
+             moveRandomly();
             try {
                 Thread.sleep(16); // Approx. 60fps
             } catch (InterruptedException e) {
@@ -166,6 +172,80 @@ public class Enemy implements Runnable {
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
     }
+
+
+    // Metodo per spostare l'enemy di 50 pixel in modo casuale
+    public void moveRandomly() {
+        if (!active) return;
+        if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT) {
+            // Movimento verticale (su o giù)
+            if (random.nextBoolean()) {
+                moveVertical(true, false); // Sposta verso l'alto
+            } else {
+                moveVertical(false, true); // Sposta verso il basso
+            }
+        } else if (direction == DIRECTION_UP || direction == DIRECTION_DOWN) {
+            // Movimento orizzontale (sinistra o destra)
+            if (random.nextBoolean()) {
+                moveHorizontal(true, false); // Sposta verso sinistra
+            } else {
+                moveHorizontal(false, true); // Sposta verso destra
+            }
+        }
+    }
+
+    public void moveVertical(boolean moveUp, boolean moveDown) {
+        if (moveUp && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
+            for (int i = 0; i < moveSpeed; i++) {
+                int newY = y - 1;
+                Rectangle newHitbox = new Rectangle(x, newY, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    y = newY;
+                    hitbox.y = y;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
+            }
+        } else if (moveDown && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
+            for (int i = 0; i < moveSpeed; i++) {
+                int newY = y + 1;
+                Rectangle newHitbox = new Rectangle(x, newY, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    y = newY;
+                    hitbox.y = y;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
+            }
+        }
+    }
+
+    public void moveHorizontal(boolean moveLeft, boolean moveRight) {
+        if (moveLeft && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
+            for (int i = 0; i < moveSpeed; i++) {
+                int newX = x - 1;
+                Rectangle newHitbox = new Rectangle(newX, y, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    x = newX;
+                    hitbox.x = x;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
+            }
+        } else if (moveRight && (direction == DIRECTION_UP || direction == DIRECTION_DOWN)) {
+            for (int i = 0; i < moveSpeed; i++) {
+                int newX = x + 1;
+                Rectangle newHitbox = new Rectangle(newX, y, width, height);
+                if (collisionManager.canMove(newHitbox)) {
+                    x = newX;
+                    hitbox.x = x;
+                } else {
+                    break; // Interrompe il ciclo se c'è una collisione
+                }
+            }
+        }
+    }
+
 
     public Rectangle getBounds() {
         return new Rectangle(hitbox.x, hitbox.y, enemyImage.getWidth(null), enemyImage.getHeight(null));
