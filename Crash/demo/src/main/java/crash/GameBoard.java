@@ -49,7 +49,7 @@ public class GameBoard extends JPanel {
         this.collisionManager = new CollisionManager(gameMap);
         this.player = new Player(collisionManager, gameMap);
         this.enemy = new Enemy(collisionManager, gameMap);
-        this.punti = new Punti(gameMap.getWidthMap(), gameMap.getHeighMap(), gameMap.getMapImage(), gameMap);
+        this.punti = new Punti(gameMap.getWidthMap(), gameMap.getHeighMap(), gameMap);
         this.keyboardManager = new KeyboardManager(player);
         this.topScore = 0;
     

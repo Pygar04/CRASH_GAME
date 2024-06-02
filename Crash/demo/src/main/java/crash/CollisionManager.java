@@ -40,9 +40,6 @@ public class CollisionManager {
 
     public boolean canMove(Rectangle intendedPosition) {
         boolean result = isFree(intendedPosition);
-        if (!result) {
-            saveDebugImageWithCollisions(intendedPosition); // Salva l'immagine di debug se non può muoversi
-        }
         return result;
     }
     
@@ -52,13 +49,10 @@ public class CollisionManager {
         int startY = Math.max(0, area.y);
         int endY = Math.min(mapImage.getHeight() - 1, area.y + area.height - 1);
 
-        System.out.println("Checking area: " + area);
-        System.out.println("Checking coordinates from (" + startX + "," + startY + ") to (" + endX + "," + endY + ")");
-
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {
                 if (wallPixels.contains(new Point(x, y))) {
-                    System.out.println("Collision found at: (" + x + "," + y + ")");
+        
                     return false; // Se un pixel del muro è nell'area, l'area non è libera
                 }
             }
@@ -66,40 +60,7 @@ public class CollisionManager {
         return true; // Se nessun pixel del muro è nell'area, l'area è libera
     }
 
-    private void saveDebugImageWithCollisions(Rectangle area) {
-        try {
-            BufferedImage debugImage = new BufferedImage(mapImage.getWidth(), mapImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-            // Disegna i muri
-            for (Point p : wallPixels) {
-                debugImage.setRGB(p.x, p.y, Color.BLUE.getRGB()); // Colore dei muri
-            }
-
-            // Disegna l'area di controllo
-            for (int x = area.x; x < area.x + area.width; x++) {
-                for (int y = area.y; y < area.y + area.height; y++) {
-                    if (x >= 0 && x < debugImage.getWidth() && y >= 0 && y < debugImage.getHeight()) {
-                        debugImage.setRGB(x, y, Color.GREEN.getRGB()); // Colore dell'area di controllo
-                    }
-                }
-            }
-
-            // Disegna le collisioni trovate
-            for (int x = area.x; x < area.x + area.width; x++) {
-                for (int y = area.y; y < area.y + area.height; y++) {
-                    if (x >= 0 && x < debugImage.getWidth() && y >= 0 && y < debugImage.getHeight() && wallPixels.contains(new Point(x, y))) {
-                        debugImage.setRGB(x, y, Color.RED.getRGB()); // Colore delle collisioni
-                    }
-                }
-            }
-
-            File outputfile = new File("collisionDebug.png");
-            ImageIO.write(debugImage, "png", outputfile);
-            System.out.println("Immagine di debug delle collisioni salvata come collisionDebug.png");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+   
 
     public boolean handleCollisions(Player player, Enemy enemy) {
         if (player.getBounds().intersects(enemy.getBounds())) // Se il giocatore e il nemico si intersecano

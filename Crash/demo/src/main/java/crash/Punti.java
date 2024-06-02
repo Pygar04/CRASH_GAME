@@ -6,12 +6,10 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
-import java.awt.image.BufferedImage;
 
 public class Punti {
 
     private List<Rectangle> punti; // Lista dei punti presenti nel gioco
-    private BufferedImage mapImage; // Immagine della mappa di gioco
     private Map map; // Map object
     private int pointSize;  // Dimensione di ogni punto
     private int mapWidth; // Dimensioni della mappa di gioco
@@ -22,9 +20,8 @@ public class Punti {
     private static final int PUNTI = 160; // Numero costante di punti
 
     // Costruttore della classe Punti
-    public Punti(int mapWidth, int mapHeight, BufferedImage mapImage, Map map) {
+    public Punti(int mapWidth, int mapHeight, Map map) {
         this.punti = new ArrayList<>();
-        this.mapImage = mapImage;
         this.map = map; // Initialize the map object
         this.pointSize = 3; // Dimensione ridotta del punto
         this.mapWidth = mapWidth;
