@@ -65,6 +65,13 @@ public class GameBoard extends JPanel {
         // Carica le immagini
         loadExplosion();
         loadLive();
+
+        // Carica i suoni
+        countdownSound = new SoundManager(COUNTDOWN_SOUND);
+        explosionSound = new SoundManager(EXPLOSION_SOUND);
+        
+        
+
     }
 
     @Override
@@ -229,7 +236,6 @@ public class GameBoard extends JPanel {
     }
 
     private void handleCollision() {
-        explosionSound = new SoundManager(EXPLOSION_SOUND);
         if (collisionManager.handleCollisions(player, enemy)) {
             executorService.shutdownNow();
             player.loseLife();

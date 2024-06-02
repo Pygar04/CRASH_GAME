@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 public class Map {
     private BufferedImage mapImage; // L'immagine della mappa
-    private static final String MAP_IMAGE_PATH = "/Image/map.png"; // Il percorso dell'immagine della mappa
+    private static final String MAP_IMAGE_PATH = "/Image/map2.png"; // Il percorso dell'immagine della mappa
 
     public Map() {
         loadImage(); // Carica l'immagine della mappa quando viene creato un oggetto Map

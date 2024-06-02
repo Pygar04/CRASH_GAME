@@ -55,7 +55,7 @@ public class Enemy implements Runnable {
     public void run() {
         while (active) {
             move();
-             moveRandomly();
+            // moveRandomly();
             try {
                 Thread.sleep(16); // Approx. 60fps
             } catch (InterruptedException e) {

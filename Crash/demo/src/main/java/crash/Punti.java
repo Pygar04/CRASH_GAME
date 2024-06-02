@@ -38,6 +38,9 @@ public class Punti {
 
         // Genera i punti
         generatePunti();
+
+        // Inizializza il suono dei punti
+        pointSound = new SoundManager(POINT_SOUND);
     }
 
     // Metodo per generare i punti
@@ -74,7 +77,6 @@ public class Punti {
 
     // Metodo per verificare le collisioni tra il giocatore e i punti
     public void checkCollisions(Player player) {
-        pointSound = new SoundManager(POINT_SOUND);
         Rectangle playerBounds = player.getBounds();
         Iterator<Rectangle> iterator = punti.iterator();
         while (iterator.hasNext()) {
