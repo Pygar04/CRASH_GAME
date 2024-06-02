@@ -12,7 +12,6 @@ public class Player implements Runnable {
     private static final int DIRECTION_UP = 1;
     private static final int DIRECTION_LEFT = 2;
     private static final int DIRECTION_DOWN = 3;
-    private static final int INIT_DIRECTION = DIRECTION_RIGHT;
 
     // Variabili di istanza
     private int x, y, width, height, speed, score, moveSpeed;
@@ -35,7 +34,6 @@ public class Player implements Runnable {
 
     public Player(CollisionManager collisionManager, Map map) {
         this.collisionManager = collisionManager;
-        this.direction = INIT_DIRECTION;
         this.lives = 3;
         updatePlayerImage();
         this.mapImage = map.getMapImage();
@@ -45,7 +43,7 @@ public class Player implements Runnable {
         this.mapHeight = mapImage.getHeight();
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.speed = 3;
+        this.speed = 5;
         this.moveSpeed = 50;
         this.score = 0;
         this.hitbox = new Rectangle(x, y, width, height);
@@ -60,11 +58,13 @@ public class Player implements Runnable {
             g.drawImage(playerImage, hitbox.x, hitbox.y, null);
 
             // DEBUG: Disegna le hitbox
+            /*
             g.setColor(Color.YELLOW);
             g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 
             g.setColor(Color.RED);
             g.drawRect(testa.x, testa.y, testa.width, testa.height);
+            */
         }
     }
 
@@ -240,13 +240,18 @@ public class Player implements Runnable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        this.active = true;
-        this.direction = INIT_DIRECTION;
+        this.direction = DIRECTION_RIGHT; // Resetta la direzione del player
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
-        this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
+        this.y = mapHeight - height - 53; // pixel sopra il bordo inferiore
         this.hitbox = new Rectangle(x, y, width, height); // Inizializza la hitbox
         this.testa = new Rectangle(x + width, y + height / 2, width, 1); //  Inizializza la hitbox della testa  
+        this.active = true;
     }
+
+    public void stopGame() {
+        active = false; // Imposta il flag active a false per fermare l'esecuzione del thread
+    }
+    
 
     public int getLives() {
         return lives;
@@ -269,7 +274,7 @@ public class Player implements Runnable {
     }
 
     public void initSpeed(){
-        this.speed = 3;
+        this.speed = 5;
     }
 
     public void setActive(boolean active) {

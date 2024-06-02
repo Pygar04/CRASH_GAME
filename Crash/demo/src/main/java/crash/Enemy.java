@@ -13,7 +13,6 @@ public class Enemy implements Runnable {
     private static final int DIRECTION_UP = 1;
     private static final int DIRECTION_RIGHT = 2;
     private static final int DIRECTION_DOWN = 3;
-    private static final int INIT_DIRECTION = DIRECTION_LEFT;
 
     // Variabili di istanza
     private int x, y, width, height, speed, direction;
@@ -24,8 +23,12 @@ public class Enemy implements Runnable {
     private Image enemyImage;
     private boolean active = true; // Stato attivo
     private CollisionManager collisionManager;
-    private Random random = new Random();
+    private Map map;
+    private Random random;
     private int moveSpeed;
+    private boolean onRedPixel;
+    private boolean hasMovedInRed;
+
     
 
     // Percorsi delle immagini dell'enemy
@@ -36,7 +39,7 @@ public class Enemy implements Runnable {
 
     public Enemy(CollisionManager collisionManager, Map map) {
         this.collisionManager = collisionManager;
-        this.direction = INIT_DIRECTION; // iniziamo con il nemico che si muove verso destra
+        this.map = map;
         this.imageMap = map.getMapImage();
         updateEnemyImage();
         this.width = enemyImage.getWidth(null);
@@ -44,18 +47,22 @@ public class Enemy implements Runnable {
         this.mapWidth = imageMap.getWidth();
         this.mapHeight = imageMap.getHeight();
         this.x = (mapWidth / 2) - 50 - width; // Centrato e spostato di 50 pixel a sinistra dal centro
-        this.y = mapHeight - height - 50; // pixel sopra il bordo inferiore
-        this.speed = 3; // Velocità di movimento predefinita
+        this.y = mapHeight - height - 53; // pixel sopra il bordo inferiore
+        this.speed = 5; // Velocità di movimento predefinita
         this.moveSpeed = 50;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
+        this.onRedPixel = false;
+        this.hasMovedInRed = false;
+        this.random = new Random();
+
     }
 
     @Override
     public void run() {
         while (active) {
             move();
-            // moveRandomly();
+            moveRandomly();
             try {
                 Thread.sleep(16); // Approx. 60fps
             } catch (InterruptedException e) {
@@ -147,13 +154,14 @@ public class Enemy implements Runnable {
             g.drawImage(enemyImage, hitbox.x, hitbox.y, null);
             
             // DEBUG: Disegna la hitbox dell'enemy in giallo
-
+            /* 
             g.setColor(Color.YELLOW);
             g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 
             // Disegna la hitbox della testa in rosso
             g.setColor(Color.RED);
             g.drawRect(testa.x, testa.y, testa.width, testa.height);
+            */
         }
     }
 
@@ -165,34 +173,51 @@ public class Enemy implements Runnable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        this.active = true;
-        this.direction = INIT_DIRECTION;
+        this.direction = DIRECTION_LEFT;
         this.x = (mapWidth / 2) - 50 - width;
         this.y = mapHeight - height - 50;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
+        this.active = true;
     }
 
 
     // Metodo per spostare l'enemy di 50 pixel in modo casuale
     public void moveRandomly() {
         if (!active) return;
-        if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT) {
-            // Movimento verticale (su o giù)
-            if (random.nextBoolean()) {
-                moveVertical(true, false); // Sposta verso l'alto
-            } else {
-                moveVertical(false, true); // Sposta verso il basso
+    
+        boolean isRedPixel = map.isRedPixel(x, y);
+    
+        if (isRedPixel && !onRedPixel) {
+            // Il nemico è appena entrato in un'area rossa
+            onRedPixel = true;
+            hasMovedInRed = false;
+        } else if (!isRedPixel && onRedPixel) {
+            // Il nemico è appena uscito dall'area rossa
+            onRedPixel = false;
+        }
+    
+        if (onRedPixel && !hasMovedInRed) {
+            // Esegui il movimento una sola volta quando entra nell'area rossa
+            if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT) {
+                // Movimento verticale (su o giù)
+                if (random.nextBoolean()) {
+                    moveVertical(true, false); // Sposta verso l'alto
+                } else {
+                    moveVertical(false, true); // Sposta verso il basso
+                }
+            } else if (direction == DIRECTION_UP || direction == DIRECTION_DOWN) {
+                // Movimento orizzontale (sinistra o destra)
+                if (random.nextBoolean()) {
+                    moveHorizontal(true, false); // Sposta verso sinistra
+                } else {
+                    moveHorizontal(false, true); // Sposta verso destra
+                }
             }
-        } else if (direction == DIRECTION_UP || direction == DIRECTION_DOWN) {
-            // Movimento orizzontale (sinistra o destra)
-            if (random.nextBoolean()) {
-                moveHorizontal(true, false); // Sposta verso sinistra
-            } else {
-                moveHorizontal(false, true); // Sposta verso destra
-            }
+            hasMovedInRed = true; // Segna che il nemico si è mosso nell'area rossa
         }
     }
+    
 
     public void moveVertical(boolean moveUp, boolean moveDown) {
         if (moveUp && (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)) {
@@ -246,6 +271,10 @@ public class Enemy implements Runnable {
         }
     }
 
+    public void stopGame() {
+        active = false; // Imposta il flag active a false per fermare l'esecuzione del thread
+    }
+
 
     public Rectangle getBounds() {
         return new Rectangle(hitbox.x, hitbox.y, enemyImage.getWidth(null), enemyImage.getHeight(null));
@@ -264,7 +293,7 @@ public class Enemy implements Runnable {
     }
 
     public void initSpeed(){
-        this.speed = 3;
+        this.speed = 5;
     }
 
 }

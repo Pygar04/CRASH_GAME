@@ -43,13 +43,13 @@ public class GameBoard extends JPanel {
     private static final String GAME_OVER_SOUND = "/Sound/gameover.wav";
     private static final String COUNTDOWN_SOUND = "/Sound/countdown.wav";
 
-    public GameBoard() { // Costruttore
+    public GameBoard(Map map) { // Costruttore
         setBackground(Color.BLACK);
-        this.gameMap = new Map();
+        this.gameMap = map;
         this.collisionManager = new CollisionManager(gameMap);
         this.player = new Player(collisionManager, gameMap);
         this.enemy = new Enemy(collisionManager, gameMap);
-        this.punti = new Punti(gameMap.getWeightMap(), gameMap.getHeightMap());
+        this.punti = new Punti(gameMap.getWidthMap(), gameMap.getHeighMap(), gameMap.getMapImage(), gameMap);
         this.keyboardManager = new KeyboardManager(player);
         this.topScore = 0;
     
@@ -69,8 +69,7 @@ public class GameBoard extends JPanel {
         // Carica i suoni
         countdownSound = new SoundManager(COUNTDOWN_SOUND);
         explosionSound = new SoundManager(EXPLOSION_SOUND);
-        
-        
+        gameOverSound = new SoundManager(GAME_OVER_SOUND);
 
     }
 
@@ -122,8 +121,8 @@ public class GameBoard extends JPanel {
         int panelHeight = getHeight();
 
         // Dimensioni del riquadro
-        int boxWidth = 262;
-        int boxHeight = 289;
+        int boxWidth = 264;
+        int boxHeight = 264;
 
         // Calcolo delle posizioni del riquadro
         int boxX = (panelWidth - boxWidth) / 2;
@@ -140,19 +139,19 @@ public class GameBoard extends JPanel {
                 g.drawString(gameOverText, centerX - gameOverWidth / 2, currentY);
         }
         // Disegna il testo "TOP SCORE"
-        currentY += 30;
+        currentY += 20;
         String ScoreText = "SCORE";
         int ScoreWidth = metrics.stringWidth(ScoreText);
         g.drawString(ScoreText, centerX - ScoreWidth / 2, currentY);
 
         // Disegna il punteggio
-        currentY += 30;
+        currentY += 20;
         String scoreText = String.valueOf(player.getScore());
         int scoreWidth = metrics.stringWidth(scoreText);
         g.drawString(scoreText, centerX - scoreWidth / 2, currentY);
 
         // Disegna i numeri dei giocatori e i loro punteggi
-        currentY += 50;
+        currentY += 20;
         String livesText = "LIVES";
         int livesWidth = metrics.stringWidth(livesText);
         g.drawString(livesText, centerX - 60 - livesWidth / 2, currentY);
@@ -163,7 +162,7 @@ public class GameBoard extends JPanel {
         }
         
         // Disegna il punteggio massimo
-        currentY += 50;
+        currentY += 40;
         String bestScoreText = "TOP SCORE";
         int bestScoreWidth = metrics.stringWidth(bestScoreText);
         g.drawString(bestScoreText, centerX - 60 - bestScoreWidth / 2, currentY);
@@ -239,7 +238,7 @@ public class GameBoard extends JPanel {
         if (collisionManager.handleCollisions(player, enemy)) {
             executorService.shutdownNow();
             player.loseLife();
-            if(player.getLives() >= 0){
+            if (player.getLives() >= 0) {
                 Point collisionPoint = collisionManager.getCollisionPoint(player, enemy);
                 explosionX = collisionPoint.x;
                 explosionY = collisionPoint.y;
@@ -248,7 +247,7 @@ public class GameBoard extends JPanel {
                 explosionSound.play();
             }
             try {
-                Thread.sleep(3000); // Pause the thread for 3 seconds
+                Thread.sleep(500); // Pause the thread 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -261,7 +260,7 @@ public class GameBoard extends JPanel {
             restart();
         }
     }
-
+    
     public void updateGame() {
         handleCollision();
         punti.checkCollisions(player); // Verifica se il player raccoglie un punto
@@ -271,7 +270,6 @@ public class GameBoard extends JPanel {
     
 
     public boolean stopGame() {
-        gameOverSound = new SoundManager(GAME_OVER_SOUND);
         if (player.getLives() == 0){
             showExplosion = false;
             gameOverSound.play();
@@ -300,14 +298,25 @@ public class GameBoard extends JPanel {
 
     public void restart(){
         if (player.getLives() > 0) {
+            try{
+                Thread.sleep(3000); // Pause the thread for 3 seconds
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            countdownSound.play();
             player.restart();
             enemy.restart();
             punti.restart();
             repaint();
+            try{
+                Thread.sleep(3000); // Pause the thread for 3 seconds
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             executorService = Executors.newFixedThreadPool(2);
             executorService.execute(player);
             executorService.execute(enemy);
-            requestFocusInWindow(); // Aggiungi questa riga per ripristinare il focus
+            requestFocusInWindow();
         }
     }
 }

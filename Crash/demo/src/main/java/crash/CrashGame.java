@@ -17,9 +17,9 @@ public class CrashGame implements Runnable {
 
     private void setupGame() {
         frame = new JFrame("Crash Game");
-        board = new GameBoard();
+        board = new GameBoard(map);
         frame.add(board);
-        frame.setSize(map.getWeightMap(), map.getHeightMap());
+        frame.setSize(map.getWidthMap(), map.getHeighMap());
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
