@@ -6,8 +6,6 @@ import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
 import java.awt.Point;
-import java.io.File;
-import javax.imageio.ImageIO;
 
 public class CollisionManager {
     private BufferedImage mapImage; // L'immagine della mappa
