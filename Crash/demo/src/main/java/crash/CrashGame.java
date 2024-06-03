@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 public class CrashGame implements Runnable {
     private GameBoard board;
     private JFrame frame;
@@ -35,20 +34,16 @@ public class CrashGame implements Runnable {
         frame.repaint();
 
         board.requestFocusInWindow();
-
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
-    }
-
-    public void showBestScores() {
-        // Implement the logic to display best scores
-        JOptionPane.showMessageDialog(frame, "Best Scores:\n1. Player1 - 1000\n2. Player2 - 800\n3. Player3 - 600");
     }
 
     @Override
     public void run() {
         while (running) {
-            board.updateGame();
+            if (board != null) {
+                board.updateGame();
+            }
             try {
                 Thread.sleep(16); // Approx. 60fps
             } catch (InterruptedException e) {
@@ -60,7 +55,7 @@ public class CrashGame implements Runnable {
     }
 
     public void stopGame() {
-        if (board.stopGame() && !executor.isShutdown()) {
+        if (board != null && board.stopGame() && !executor.isShutdown()) {
             executor.shutdownNow(); // Stop all running tasks
         }
     }

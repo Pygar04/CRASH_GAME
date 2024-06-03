@@ -27,14 +27,14 @@ public class GameBoard extends JPanel {
     private JButton restartButton;
     private JButton pauseButton;
     private int topScore;
-    private boolean isPaused = false;
-    private SoundManager explosionSound;
+    private boolean isPaused;
     private SoundManager gameOverSound;
+    private SoundManager explosionSound;
     private SoundManager countdownSound;
     private ScoreFile Score;
 
     private int explosionX, explosionY;
-    private boolean showExplosion = false;
+    private boolean showExplosion;
 
     private static final String EXPLOSION = "/Image/explosion.png";
     private static final String LIVE = "/Image/live.png";
@@ -54,6 +54,8 @@ public class GameBoard extends JPanel {
         this.punti = new Punti(gameMap.getWidthMap(), gameMap.getHeighMap(), gameMap);
         this.keyboardManager = new KeyboardManager(player);
         this.topScore = 0;
+        this.isPaused = false;
+        this.showExplosion = false;
     
         addKeyListener(keyboardManager);
         setFocusable(true);
