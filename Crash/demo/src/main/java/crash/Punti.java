@@ -28,8 +28,8 @@ public class Punti {
         this.mapHeight = mapHeight;
 
         // Definisci il riquadro centrale
-        int boxWidth = 264;
-        int boxHeight = 264;
+        int boxWidth = 262;
+        int boxHeight = 289;
         int boxX = (mapWidth - boxWidth) / 2;
         int boxY = (mapHeight - boxHeight) / 2;
         this.centralBox = new Rectangle(boxX, boxY, boxWidth, boxHeight);

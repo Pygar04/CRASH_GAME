@@ -22,7 +22,7 @@ public class Player implements Runnable {
     private Rectangle testa; // hitbox della testa
     private Image playerImage;
     private int lives;
-    private boolean active = true;
+    private boolean active;
     private CollisionManager collisionManager;
 
     // Percorsi delle immagini del player
@@ -33,6 +33,7 @@ public class Player implements Runnable {
     
 
     public Player(CollisionManager collisionManager, Map map) {
+        this.active = true;
         this.collisionManager = collisionManager;
         this.lives = 3;
         updatePlayerImage();
@@ -43,7 +44,7 @@ public class Player implements Runnable {
         this.mapHeight = mapImage.getHeight();
         this.x = (mapWidth / 2) + 50 - (width / 2); // Centrato e spostato di 50 pixel a destra dal centro
         this.y = mapHeight - height - 50; // 50 pixel sopra il bordo inferiore
-        this.speed = 5;
+        this.speed = 4;
         this.moveSpeed = 50;
         this.score = 0;
         this.hitbox = new Rectangle(x, y, width, height);
@@ -270,11 +271,11 @@ public class Player implements Runnable {
     }
 
     public void incrementScore(){
-        score++;
+        score += 10;
     }
 
     public void initSpeed(){
-        this.speed = 5;
+        this.speed = 4;
     }
 
     public void setActive(boolean active) {

@@ -89,11 +89,12 @@ public class GameBoard extends JPanel {
     }
 
     private void drawExplosion(Graphics g) {
-        if (showExplosion) {
+        if (showExplosion && player.getLives() > 0) {
             System.out.println("Disegno l'esplosione alle coordinate: (" + explosionX + ", " + explosionY + ")");
             g.drawImage(explosionImage, explosionX - explosionImage.getWidth(null) / 2, explosionY - explosionImage.getHeight(null) / 2, null);
         }
     }
+    
     
     private void drawPauseMenu(Graphics g) {
         if (isPaused) {
@@ -121,8 +122,9 @@ public class GameBoard extends JPanel {
         int panelHeight = getHeight();
 
         // Dimensioni del riquadro
-        int boxWidth = 264;
-        int boxHeight = 264;
+        // Dimensioni del riquadro
+        int boxWidth = 262;
+        int boxHeight = 289;
 
         // Calcolo delle posizioni del riquadro
         int boxX = (panelWidth - boxWidth) / 2;
@@ -139,19 +141,19 @@ public class GameBoard extends JPanel {
                 g.drawString(gameOverText, centerX - gameOverWidth / 2, currentY);
         }
         // Disegna il testo "TOP SCORE"
-        currentY += 20;
+        currentY += 30;
         String ScoreText = "SCORE";
         int ScoreWidth = metrics.stringWidth(ScoreText);
         g.drawString(ScoreText, centerX - ScoreWidth / 2, currentY);
 
         // Disegna il punteggio
-        currentY += 20;
+        currentY += 30;
         String scoreText = String.valueOf(player.getScore());
         int scoreWidth = metrics.stringWidth(scoreText);
         g.drawString(scoreText, centerX - scoreWidth / 2, currentY);
 
         // Disegna i numeri dei giocatori e i loro punteggi
-        currentY += 20;
+        currentY += 50;
         String livesText = "LIVES";
         int livesWidth = metrics.stringWidth(livesText);
         g.drawString(livesText, centerX - 60 - livesWidth / 2, currentY);
@@ -162,7 +164,7 @@ public class GameBoard extends JPanel {
         }
         
         // Disegna il punteggio massimo
-        currentY += 40;
+        currentY += 50;
         String bestScoreText = "TOP SCORE";
         int bestScoreWidth = metrics.stringWidth(bestScoreText);
         g.drawString(bestScoreText, centerX - 60 - bestScoreWidth / 2, currentY);
@@ -191,18 +193,20 @@ public class GameBoard extends JPanel {
         restartButton.setBorder(yellowBorder); // Imposta il bordo giallo
         add(restartButton);
         restartButton.addActionListener(e -> {
-            player.restart();
-            player.initScore();
-            enemy.initSpeed();
-            player.initLives();
-            player.initSpeed();
-            enemy.restart();
-            punti.restart();
-            repaint();
-            executorService = Executors.newFixedThreadPool(2);
-            executorService.execute(player);
-            executorService.execute(enemy);
-            requestFocusInWindow(); // Aggiungi questa riga per ripristinare il focus
+            if(player.getLives() <= 0){
+                player.restart();
+                player.initScore();
+                enemy.initSpeed();
+                player.initLives();
+                player.initSpeed();
+                enemy.restart();
+                punti.restart();
+                repaint();
+                executorService = Executors.newFixedThreadPool(2);
+                executorService.execute(player);
+                executorService.execute(enemy);
+                requestFocusInWindow(); // Aggiungi questa riga per ripristinare il focus
+            }
         });
     
         // Crea e configura il pulsante PAUSE
@@ -238,13 +242,15 @@ public class GameBoard extends JPanel {
         if (collisionManager.handleCollisions(player, enemy)) {
             executorService.shutdownNow();
             player.loseLife();
-            if (player.getLives() >= 0) {
+            if (player.getLives() > 0) {
                 Point collisionPoint = collisionManager.getCollisionPoint(player, enemy);
                 explosionX = collisionPoint.x;
                 explosionY = collisionPoint.y;
                 showExplosion = true;
                 repaint();
                 explosionSound.play();
+            } else {
+                showExplosion = false;
             }
             try {
                 Thread.sleep(500); // Pause the thread 
@@ -260,6 +266,7 @@ public class GameBoard extends JPanel {
             restart();
         }
     }
+    
     
     public void updateGame() {
         handleCollision();

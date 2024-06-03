@@ -21,7 +21,7 @@ public class Enemy implements Runnable {
     private Rectangle hitbox; // hitbox dell'enemy
     private Rectangle testa; // hitbox posizionato nella testa dell'enemy
     private Image enemyImage;
-    private boolean active = true; // Stato attivo
+    private boolean active; // Stato attivo
     private CollisionManager collisionManager;
     private Map map;
     private Random random;
@@ -38,6 +38,7 @@ public class Enemy implements Runnable {
     private static final String ENEMY_DOWN = "/Image/enemyDown.png";
 
     public Enemy(CollisionManager collisionManager, Map map) {
+        this.active = true;
         this.collisionManager = collisionManager;
         this.map = map;
         this.imageMap = map.getMapImage();
@@ -48,7 +49,7 @@ public class Enemy implements Runnable {
         this.mapHeight = imageMap.getHeight();
         this.x = (mapWidth / 2) - 50 - width; // Centrato e spostato di 50 pixel a sinistra dal centro
         this.y = mapHeight - height - 53; // pixel sopra il bordo inferiore
-        this.speed = 5; // Velocità di movimento predefinita
+        this.speed = 4; // Velocità di movimento predefinita
         this.moveSpeed = 50;
         this.hitbox = new Rectangle(x, y, width, height);
         this.testa = new Rectangle((hitbox.x + hitbox.width), (hitbox.y + hitbox.height / 2), (hitbox.width / 4), 1);
@@ -293,7 +294,7 @@ public class Enemy implements Runnable {
     }
 
     public void initSpeed(){
-        this.speed = 5;
+        this.speed = 4;
     }
 
 }
