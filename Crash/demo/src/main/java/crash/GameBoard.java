@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
 import java.awt.Point;
-import java.io.File;
 
 public class GameBoard extends JPanel {
     private Player player;
