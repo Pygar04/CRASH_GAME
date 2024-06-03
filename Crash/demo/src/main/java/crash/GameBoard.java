@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
 import java.awt.Point;
+import java.io.File;
 
 public class GameBoard extends JPanel {
     private Player player;
@@ -31,6 +32,7 @@ public class GameBoard extends JPanel {
     private SoundManager explosionSound;
     private SoundManager gameOverSound;
     private SoundManager countdownSound;
+    private ScoreFile Score;
 
     private int explosionX, explosionY;
     private boolean showExplosion = false;
@@ -42,6 +44,7 @@ public class GameBoard extends JPanel {
     private static final String EXPLOSION_SOUND = "/Sound/explosion.wav";
     private static final String GAME_OVER_SOUND = "/Sound/gameover.wav";
     private static final String COUNTDOWN_SOUND = "/Sound/countdown.wav";
+
 
     public GameBoard(Map map) { // Costruttore
         setBackground(Color.BLACK);
@@ -70,6 +73,9 @@ public class GameBoard extends JPanel {
         countdownSound = new SoundManager(COUNTDOWN_SOUND);
         explosionSound = new SoundManager(EXPLOSION_SOUND);
         gameOverSound = new SoundManager(GAME_OVER_SOUND);
+
+        Score = new ScoreFile("topScore.data");
+
 
     }
 
@@ -280,6 +286,9 @@ public class GameBoard extends JPanel {
         if (player.getLives() == 0){
             showExplosion = false;
             gameOverSound.play();
+            if(topScore > Score.loadTopScore()){
+                Score.saveTopScore(topScore);
+            }
             return true;
             }
         return false;
